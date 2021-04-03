@@ -1,5 +1,5 @@
 module.exports = {
     devServer: {
-        proxy: 'http://localhost:4000'
+        proxy: 'https://invoice-express-app.herokuapp.com'
     }
 }
