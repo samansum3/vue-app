@@ -1,10 +1,10 @@
 import Vue from 'vue';
 import App from './App.vue';
-import initAuthentication from './authentication/firebase';
+import firebaseWrapper from './authentication/firebase_wrapper';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 
 //init firebase auth
-initAuthentication();
+firebaseWrapper.initializeApp();
 
 //bootstrap
 import 'bootstrap/dist/css/bootstrap.css';

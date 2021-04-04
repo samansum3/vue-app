@@ -1,27 +1,44 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <button class="btn btn-primary" @click="sendTestRequest">Send</button>
-    <button class="btn btn-primary" @click="getInvoices">Get invoices</button>
+    <div v-if="isLoading">
+      <h3>Loading...</h3>
+    </div>
+    <template v-else>
+      <login v-if="!isSignedIn" />
+      <div v-else>
+        <button class="btn btn-info" @click="logout">Log out</button>
+        <div>Hello world</div>
+      </div>
+    </template>
   </div>
 </template>
 
 <script>
-  import axios from 'axios';
+  import login from './components/login';
+  import firebase from 'firebase/app';
 
   export default {
     name: 'App',
     components: {
-      
+      login
+    },
+    data() {
+      return {
+        isSignedIn: false,
+        isLoading: false
+      }
+    },
+    created() {
+      this.isLoading = true;
+      firebase.auth().onAuthStateChanged(user => {
+        this.isLoading = false;
+        this.isSignedIn = !!user;
+      });
     },
     methods: {
-      sendTestRequest() {
-        axios.post('/post').then(console.log).catch(console.error);
-      },
-      getInvoices() {
-        axios.get('/invoice/get-all').then(console.log).catch(console.error);
+      logout() {
+        firebase.auth().signOut();
       }
     }
   }
 </script>
-
