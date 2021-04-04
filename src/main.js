@@ -1,7 +1,12 @@
-import Vue from 'vue'
-import App from './App.vue'
+import Vue from 'vue';
+import App from './App.vue';
+import initAuthentication from './authentication/firebase';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 
+//init firebase auth
+initAuthentication();
+
+//bootstrap
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
