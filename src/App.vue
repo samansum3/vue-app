@@ -30,9 +30,16 @@
     },
     created() {
       this.isLoading = true;
-      firebase.auth().onAuthStateChanged(user => {
+      firebase.auth().onAuthStateChanged(auth => {
         this.isLoading = false;
-        this.isSignedIn = !!user;
+        if (auth) {
+          if (!auth.emailVerified) {
+            auth.sendEmailVerification().then(() => {
+              alert('Your email is not verified! Please check your inbox and verify.');
+            });
+          }
+        }
+        this.isSignedIn = !!auth;
       });
     },
     methods: {

@@ -1,10 +1,10 @@
 <template>
-    <div>
+    <form @submit.prevent="login">
         <input type="text" class="form-control" placeholder="Enter email" v-model="user.email" />
         <input type="text" class="form-control" placeholder="Enter password" v-model="user.password" />
-        <button class="btn btn-primary" @click="login">Login</button>
+        <button class="btn btn-primary" type="submit">Login</button>
         <button class="btn btn-primary" @click="signup">Sign up</button>
-    </div>
+    </form>
 </template>
 
 <script>
