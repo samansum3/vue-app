@@ -3,6 +3,8 @@ const serverStatic = require('serve-static');
 const path = require('path');
 const bodyParser = require('body-parser');
 
+require('dotenv').config();
+
 const connectToMongodb = require('./database/mongodb');
 const environment = require('./config/environment');
 const invoice = require('./model/invoice');
