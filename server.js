@@ -2,6 +2,8 @@ const express = require('express');
 const serverStatic = require('serve-static');
 const path = require('path');
 const bodyParser = require('body-parser');
+const admin = require('firebase-admin');
+require('./database/firebase_admin_wrapper');
 
 require('dotenv').config();
 
@@ -10,6 +12,9 @@ const environment = require('./config/environment');
 const invoice = require('./model/invoice');
 
 const app = express();
+
+//initialize firebase admin app
+
 
 //connect to db
 connectToMongodb();
@@ -23,6 +28,11 @@ app.use('/', serverStatic(path.join(__dirname, 'dist')));
 app.use('/.*/', (request, response) => {
     response.sendFile(path.join(__dirname, 'dist/index.html'));
 });
+
+const sendError = (response, error, message) => {
+    console.log('ERROR ' + error);
+    response.status(500).json({message: message});
+}
 
 app.post('/invoice/create', (request, response) => {
     const form = request.body;
@@ -43,15 +53,19 @@ app.post('/invoice/create', (request, response) => {
 });
 
 app.get('/invoice/get-all', (request, response) => {
-    invoice.find((error, docs) => {
-        if (error) {
-            console.log('ERROR ' + error);
-            response.status(500).json({message: 'Failed to fetch invoices.'});
-        } else {
-            console.log('Get all invoice docs successfully.');
-            response.status(200).json(docs);
-        }
-    })
+    admin.auth().verifyIdToken(request.headers.token).then(token => {
+        console.info(token);
+        invoice.find((error, docs) => {
+            if (error) {
+                sendError(response, error, 'Failed to get invoices');
+            } else {
+                console.log('Get all invoice docs successfully.');
+                response.status(200).json(docs);
+            }
+        });
+    }).catch(error => {
+        sendError(response, error, 'Authorization required.');
+    });
 });
 
 app.get('/invoice/get/:id', (request, response) => {

@@ -3,6 +3,7 @@ node_modules
 /dist
 
 *package-lock.json
+*firebase-admin-auth.json
 
 # local env files
 .env.local
