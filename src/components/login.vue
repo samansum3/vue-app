@@ -1,10 +1,12 @@
 <template>
-    <form @submit.prevent="login">
-        <input type="text" class="form-control" placeholder="Enter email" v-model="user.email" />
-        <input type="text" class="form-control" placeholder="Enter password" v-model="user.password" />
-        <button class="btn btn-primary" type="submit">Login</button>
+    <div>
+        <form @submit.prevent="login">
+            <input type="text" class="form-control" placeholder="Enter email" v-model="user.email" />
+            <input type="password" class="form-control" placeholder="Enter password" v-model="user.password" />
+            <button class="btn btn-primary" type="submit">Login</button>
+        </form>
         <button class="btn btn-primary" @click="signup">Sign up</button>
-    </form>
+    </div>
 </template>
 
 <script>

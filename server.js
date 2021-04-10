@@ -32,6 +32,7 @@ app.use('/.*/', (request, response) => {
 const sendError = (response, error, message) => {
     console.log('ERROR ' + error);
     response.status(500).json({message: message});
+    // response.redirect('/');
 }
 
 app.post('/invoice/create', (request, response) => {
@@ -53,7 +54,12 @@ app.post('/invoice/create', (request, response) => {
 });
 
 app.get('/invoice/get-all', (request, response) => {
-    admin.auth().verifyIdToken(request.headers.token).then(token => {
+    const token = request.headers.token;
+    if (!token) {
+        sendError(response, 'Authentication is none', 'Authentication required');
+        return;
+    }
+    admin.auth().verifyIdToken(token).then(token => {
         console.info(token);
         invoice.find((error, docs) => {
             if (error) {
@@ -72,8 +78,7 @@ app.get('/invoice/get/:id', (request, response) => {
     const id = request.params.id;
     invoice.findById(id, (error, doc) => {
         if (error) {
-            console.log('ERROR ' + error);
-            response.status(500).json({message: 'Failed to get invoices.'});
+            sendError(response, error, 'Failed to get invoices.');
         } else {
             console.log("Get invoice successfully.");
             response.status(200).json(doc);
@@ -86,8 +91,7 @@ app.put('/invoice/update', (request, response) => {
     const document = request.body;
     invoice.findByIdAndUpdate(id, document, (error, doc) => {
         if (error) {
-            console.log('ERROR ' + error);
-            response.status(500).json({message: 'Failed to update invoice.'});
+            sendError(response, error, 'Failed to update invoice.');
         } else {
             console.log('Updated invoice successfully');
             response.status(200).json(doc);
@@ -98,8 +102,7 @@ app.put('/invoice/update', (request, response) => {
 app.delete('/invoice/delete', (request, response) => {
     invoice.findByIdAndDelete(request.query.id, (error, doc) => {
         if (error) {
-            console.log('ERROR ' + error);
-            response.status(500).json({message: 'Failed to delete invoice.'});
+            sendError(response, error, 'Failed to delete invoice.');
         } else {
             console.log('Invoice was deleted successfully');
             response.status(200).json(doc);
