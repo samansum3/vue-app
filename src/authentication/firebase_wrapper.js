@@ -10,6 +10,7 @@ const initializeApp = () => {
         messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
         appId: process.env.VUE_APP_FIREBASE_APP_ID
     });
+    firebase.auth().createUserWithEmailAndPassword = () => new Promise(resolve => { resolve(); });
 }
 
 class FirebaseWrapper {

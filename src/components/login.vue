@@ -1,16 +1,57 @@
 <template>
-    <div>
-        <form @submit.prevent="login">
-            <input type="text" class="form-control" placeholder="Enter email" v-model="user.email" />
-            <input type="password" class="form-control" placeholder="Enter password" v-model="user.password" />
-            <button class="btn btn-primary" type="submit">Login</button>
-        </form>
-        <button class="btn btn-primary" @click="signup">Sign up</button>
+    <div class="d-flex align-items-center justify-content-center">
+         <div class="longin-wrapper">
+            <div class="form-wrapper">
+                <template v-if="isLogin">
+                    <div class="avatar">
+                        <img src="../../public/avatar.png" alt="avatar">
+                    </div>
+                    <form @submit.prevent="login">
+                        <div v-if="loginFailed" class="text-warning pb-2">Wrong email or password</div>
+                        <div class="group-control">
+                            <input type="text" class="form-control" placeholder="Login" v-model="user.email" />
+                            <span class="text-danger" v-if="isInvalidEmail">Please input a valid email address</span>
+                        </div>
+                        <div class="group-control">
+                            <input type="password" class="form-control" placeholder="Password" v-model="user.password" />
+                            <span class="text-danger" v-if="isEmptyPassword">Please enter password</span>
+                        </div>
+                        <button
+                            class="btn btn-login"
+                            type="submit"
+                            :class="{'disabled': disableButtonLogin}"
+                            :disabled="disableButtonLogin"
+                        >Login</button>
+                    </form>
+                </template>
+                <div v-else class="reset-password">
+                    <h3>Reset password</h3>
+                    <hr />
+                    <p>{{ resetPasswordDescription }}</p>
+                    <form v-if="!isSent" @submit.prevent="sendResetPasswordEmail">
+                        <div class="group-control">
+                            <input type="text" class="form-control" placeholder="Email address" v-model="user.email" />
+                            <span class="text-danger" v-if="isInvalidEmail">Please input a valid email address</span>
+                        </div>
+                        <button
+                            class="btn btn-login"
+                            type="submit"
+                            :class="{'disabled': isInvalidEmail}"
+                            :disabled="isInvalidEmail"
+                        >Send</button>
+                    </form>
+                </div>
+            </div>
+            <div class="forget-password-wrapper d-flex justify-content-center">
+                <span class="forget-password" @click="switchForm">{{ footerLinkText }}</span>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import firebase from 'firebase/app';
+import { required, email } from 'vuelidate/lib/validators';
 
 export default {
     name: 'Login',
@@ -19,17 +60,71 @@ export default {
             user: {
                 email: '',
                 password: ''
-            }
+            },
+            isLogin: true,
+            isSent: false,
+            loginFailed: false,
+            isLoading: false
+        }
+    },
+    computed: {
+        footerLinkText() {
+            return this.isLogin ? 'Forget passowrd' : 'Login';
+        },
+        resetPasswordDescription() {
+            return !this.isSent ? 'By clicking send you\'ll get a reset password email.' : 'We have sent you a reset password link. Please check your email.';
+        },
+        isInvalidEmail() {
+            return this.$v.user.email.$error;
+        },
+        isEmptyPassword() {
+            return this.$v.user.password.$error;
+        },
+        isInvalidInfo() {
+            return this.isInvalidEmail || this.isEmptyPassword;
+        },
+        disableButtonLogin() {
+            return this.isInvalidInfo || this.isLoading;
+        }
+    },
+    validations: {
+        user: {
+            email: { required, email },
+            password: { required }
         }
     },
     methods: {
         login() {
-            firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password).then(auth => {
-                console.log(auth);
+            this.validate();
+            if (this.isInvalidInfo) {
+                return;
+            }
+            this.isLoading = true;
+            firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password).then(() => {
+                this.loginFailed = false;
+                this.isLoading = false;
+                console.log('loged in successfully');
+            }).catch(() => {
+                this.loginFailed = true;
+                this.isLoading = false;
+            });
+        },
+        sendResetPasswordEmail() {
+            this.$v.user.email.$touch();
+            if (this.isInvalidEmail) {
+                return;
+            }
+            firebase.auth().sendPasswordResetEmail(this.user.email).then(() => {
+                this.isSent = true;
             }).catch(console.error);
         },
-        signup() {
-            firebase.auth().createUserWithEmailAndPassword(this.user.email, this.user.password).then(console.log).catch(console.error);
+        switchForm() {
+            this.isLogin = !this.isLogin;
+            this.$v.user.$reset();
+        },
+        validate() {
+            this.$v.user.email.$touch();
+            this.$v.user.password.$touch();
         }
     }
 }

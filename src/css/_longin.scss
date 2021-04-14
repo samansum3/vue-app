@@ -1,0 +1,76 @@
+.longin-wrapper {
+    background-color: #fff;
+    box-shadow: 5px 5px 20px #a7a6a6;
+    width: 375px;
+    border-radius: 0.75rem;
+    margin-top: 4rem;
+
+    .form-wrapper {
+        padding: 2rem;
+        padding-bottom: 1rem;
+
+        .avatar {
+            margin-bottom: 2rem;
+    
+            img {
+                width: 100px;
+            }
+        }
+    
+        form {
+            .group-control {
+                padding-bottom: 1rem;
+
+                span {
+                    font-size: 14px;
+                }
+            }
+            .form-control {
+                text-align: center;
+                background-color: #f5f5f5 !important;
+                box-shadow: none !important;
+                border: none;
+                height: 3.2rem !important;
+
+                &::placeholder {
+                    color: #a6a6a6;
+                }
+            }
+            .btn-login {
+                color: white;
+                background-color: #5dc4e1;
+                padding-left: 3rem;
+                padding-right: 3rem;
+                height: 2.75rem;
+                box-shadow: none;
+
+                &:hover,
+                &:active {
+                    background-color: #49a7c1;
+                }
+            }
+        }
+
+        .reset-password {
+            h3 {
+                color: #5dc4e1;
+                margin-bottom: 0.5rem;
+            }
+            p {
+                color: #a6a6a6;
+            }
+        }
+    }
+
+    .forget-password-wrapper {
+        padding: 1.75rem;
+        background-color: #f2f2f2;
+        border-bottom-left-radius: 0.75rem;
+        border-bottom-right-radius: 0.75rem;
+
+        .forget-password {
+            color: #5dc4e1;
+            cursor: pointer;
+        }
+    }
+}
