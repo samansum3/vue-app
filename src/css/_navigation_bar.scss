@@ -1,0 +1,40 @@
+.global-navigation.navbar {
+    background-image: linear-gradient(to right, #489bee, #5fc2cf);
+    background-image: -moz-linear-gradient(to right, #489bee, #5fc2cf);
+    background-image: -webkit-gradient(to right, #489bee, #5fc2cf);
+    background-image: -webkit-linear-gradient(to right, #489bee, #5fc2cf);
+    background-image: -o-linear-gradient(to right, #489bee, #5fc2cf);
+    background-image: -ms-linear-gradient(to right, #489bee, #5fc2cf);
+
+    height: 5rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
+
+    .navbar-brand {
+        color: white;
+        font-weight: bold;
+        font-size: 1.5rem;
+
+    }
+    .navbar-nav {
+        .nav-item {
+            .nav-link {
+                color: #e0e0e0;
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+        .nav-item.active {
+            .nav-link {
+                color: white;
+            }
+        }
+    }
+    .user-avatar {
+        width: 2.5rem;
+        border-radius: 50%;
+        border: 1px solid white;
+        background-color: white;
+        cursor: pointer;
+    }
+}

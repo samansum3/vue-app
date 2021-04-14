@@ -5,24 +5,29 @@
     </div>
     <template v-else>
       <login v-if="!isSignedIn" />
-      <div v-else>
+      <template v-else>
+        <navbar></navbar>
+
         <button class="btn btn-info" @click="logout">Log out</button>
         <div>Hello world</div>
-      </div>
+        <button class="btn btn-primary" @click="getAllInvoices">Get Incoices</button>
+      </template>
     </template>
-    <button class="btn btn-primary" @click="getAllInvoices">Get Incoices</button>
   </div>
 </template>
 
 <script>
-  import login from './components/login';
   import firebase from 'firebase/app';
   import axios from 'axios';
+  
+  import login from './components/login';
+  import Navbar from './components/navbar';
 
   export default {
     name: 'App',
     components: {
-      login
+      login,
+      Navbar
     },
     data() {
       return {
