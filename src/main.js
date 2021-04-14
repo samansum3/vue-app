@@ -1,5 +1,6 @@
 import Vue from 'vue/dist/vue.common.prod';
-import Vuelidate from 'vuelidate';
+import { Vuelidate } from 'vuelidate/dist/vuelidate.min';
+import VueRouter from 'vue-router/dist/vue-router.min';
 
 Vue.config.productionTip = false;
 
@@ -21,7 +22,22 @@ import './css/main.scss';
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 Vue.use(Vuelidate);
+Vue.use(VueRouter);
+
+const Foo = { template: '<div>foo</div>' }
+const Bar = { template: '<div>bar</div>' }
+
+const routes = [
+  { path: '/foo', component: Foo },
+  { path: '/bar', component: Bar }
+];
+
+const router = new VueRouter({
+  mode: 'history',
+  routes
+})
 
 new Vue({
   render: h => h(App),
+  router
 }).$mount('#app');

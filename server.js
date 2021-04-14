@@ -24,11 +24,6 @@ connectToMongodb();
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-app.use('/', serverStatic(path.join(__dirname, 'dist')));
-
-app.use('/.*/', (request, response) => {
-    response.sendFile(path.join(__dirname, 'dist/index.html'));
-});
 
 const sendError = (response, error, message) => {
     console.log('ERROR ' + error);
@@ -110,6 +105,16 @@ app.delete('/invoice/delete', (request, response) => {
         }
     });
 });
+
+//Serve vue app
+app.use('/', serverStatic(path.join(__dirname, 'dist')));
+
+app.use('/*', serverStatic(path.join(__dirname, 'dist')));
+
+app.use('/.*/', (request, response) => {
+    response.sendFile(path.join(__dirname, 'dist/index.html'));
+});
+//End serve vue app
 
 app.listen(environment.server.port, environment.server.host, () => {
     console.log('Server started at %s on port %s', environment.server.host, environment.server.port);

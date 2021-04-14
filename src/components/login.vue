@@ -51,7 +51,7 @@
 
 <script>
 import firebase from 'firebase/app';
-import { required, email } from 'vuelidate/lib/validators';
+import { required, email } from 'vuelidate/dist/validators.min';
 
 export default {
     name: 'Login',

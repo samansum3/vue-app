@@ -7,6 +7,14 @@
       <login v-if="!isSignedIn" />
       <template v-else>
         <navbar></navbar>
+          <p>
+            <!-- use router-link component for navigation. -->
+            <!-- specify the link by passing the `to` prop. -->
+            <!-- `<router-link>` will be rendered as an `<a>` tag by default -->
+            <router-link to="/foo">Go to Foo</router-link>
+            <router-link to="/bar">Go to Bar</router-link>
+          </p>
+        <router-view></router-view>
 
         <button class="btn btn-info" @click="logout">Log out</button>
         <div>Hello world</div>
@@ -18,7 +26,7 @@
 
 <script>
   import firebase from 'firebase/app';
-  import axios from 'axios';
+  import axios from 'axios/dist/axios.min';
   
   import login from './components/login';
   import Navbar from './components/navbar';
@@ -56,7 +64,7 @@
           return;
         }
         user.getIdToken(false).then(token => {
-          axios.get('/invoice/get-all', {
+          axios.get('/invoice/get-all/', {
             headers: {
               token: token
             }
