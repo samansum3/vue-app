@@ -3,7 +3,6 @@ const serverStatic = require('serve-static');
 const path = require('path');
 const bodyParser = require('body-parser');
 const admin = require('firebase-admin');
-require('./database/firebase_admin_wrapper');
 
 require('dotenv').config();
 
@@ -14,10 +13,12 @@ const invoice = require('./model/invoice');
 const app = express();
 
 //initialize firebase admin app
+require('./database/firebase_admin_wrapper');
 
 
 //connect to db
 connectToMongodb();
+
 
 //User body parser
 app.use(bodyParser.urlencoded({extended: false}));
