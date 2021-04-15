@@ -26,10 +26,14 @@ Vue.use(VueRouter);
 
 const Foo = { template: '<div>foo</div>' }
 const Bar = { template: '<div>bar</div>' }
+const Home = { template: '<h3>Home</h3>'}
+const PageNotFound = { template: '<h3>Page not found.</h3>'}
 
 const routes = [
+  { path: '/', component: Home },
   { path: '/foo', component: Foo },
-  { path: '/bar', component: Bar }
+  { path: '/bar', component: Bar },
+  { path: '/*', component: PageNotFound }
 ];
 
 const router = new VueRouter({
