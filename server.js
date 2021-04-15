@@ -3,6 +3,7 @@ const serverStatic = require('serve-static');
 const path = require('path');
 const bodyParser = require('body-parser');
 const admin = require('firebase-admin');
+const cors = require('cors');
 
 require('dotenv').config();
 
@@ -11,6 +12,15 @@ const environment = require('./config/environment');
 const invoice = require('./model/invoice');
 
 const app = express();
+
+//Prevent cross site attack
+app.use(cors({
+    origin: [
+        'http://localhost:8080' //TODO change to production domain
+    ],
+    credentials: true,
+    exposedHeaders: ['set-cookie']
+}));
 
 //initialize firebase admin app
 require('./database/firebase_admin_wrapper');
