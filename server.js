@@ -24,6 +24,9 @@ connectToMongodb();
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
+const router = require('./api/route');
+app.use('/api', router);
+
 
 const sendError = (response, error, message) => {
     console.log('ERROR ' + error);
