@@ -4,6 +4,8 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const admin = require('firebase-admin');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 
 require('dotenv').config();
 
@@ -16,7 +18,7 @@ const app = express();
 //Prevent cross site attack
 app.use(cors({
     origin: [
-        'http://localhost:8080' //TODO change to production domain
+        process.env.VUE_APP_PRODUCTION_URL
     ],
     credentials: true,
     exposedHeaders: ['set-cookie']
@@ -33,6 +35,18 @@ connectToMongodb();
 //User body parser
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+app.use(cookieParser());
+
+app.use(session({
+    secret: 'hello world',
+    cookie: {
+        maxAge: 1000 * 60 * 60,
+        secure: process.env.NODE_ENV === 'production'
+    },
+    saveUninitialized: false,
+    resave: false,
+    unset: 'destroy'
+}));
 
 const router = require('./api/route');
 app.use('/api', router);

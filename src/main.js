@@ -19,6 +19,12 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 //custom css
 import './css/main.scss';
 
+import VueCookies from 'vue-cookies';
+Vue.use(VueCookies);
+
+VueCookies.config('5d');
+
+
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 Vue.use(Vuelidate);
