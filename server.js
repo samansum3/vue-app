@@ -6,6 +6,7 @@ const admin = require('firebase-admin');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const csrf = require('csurf');
 
 require('dotenv').config();
 
@@ -36,6 +37,7 @@ connectToMongodb();
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(csrf({ cookie: true }));
 
 app.use(session({
     secret: 'hello world',
@@ -47,6 +49,20 @@ app.use(session({
     resave: false,
     unset: 'destroy'
 }));
+
+app.all('*', (req, res, next) => {
+    res.cookie("XSRF-TOKEN", req.csrfToken());
+    next();
+});
+
+app.use(function (err, req, res, next) {
+    if (err.code !== 'EBADCSRFTOKEN') {
+        return next(err);
+    } else {
+        res.status(403);
+        res.send('');
+    }
+});
 
 const router = require('./api/route');
 app.use('/api', router);
