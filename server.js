@@ -13,6 +13,7 @@ require('dotenv').config();
 const connectToMongodb = require('./database/mongodb');
 const environment = require('./config/environment');
 const invoice = require('./model/invoice');
+const firebaseAuthentication = require('./middleware/authentication');
 
 const app = express();
 
@@ -40,7 +41,7 @@ app.use(cookieParser());
 app.use(csrf({ cookie: true }));
 
 app.use(session({
-    secret: 'hello world',
+    secret: process.env.VUE_APP_SESSION_SECRET,
     cookie: {
         maxAge: 1000 * 60 * 60,
         secure: process.env.NODE_ENV === 'production'
@@ -55,6 +56,8 @@ app.all('*', (req, res, next) => {
     next();
 });
 
+app.use('/api/*', firebaseAuthentication(admin));
+
 app.use(function (err, req, res, next) {
     if (err.code !== 'EBADCSRFTOKEN') {
         return next(err);
@@ -66,6 +69,25 @@ app.use(function (err, req, res, next) {
 
 const router = require('./api/route');
 app.use('/api', router);
+
+app.post('/session_login', (request, response) => {
+    const expiresIn = 60 * 60 * 24 * 5 * 1000;
+    admin.auth().createSessionCookie(request.body.idToken, { expiresIn }).then(sessionCookie => {
+        // Set cookie policy for session cookie.
+        const options = { maxAge: expiresIn, httpOnly: true, secure: true };
+        response.cookie('session', sessionCookie, options);
+        response.end(JSON.stringify({ status: 'success' }));
+    },
+      (error) => {
+        response.status(401).send('UNAUTHORIZED REQUEST!');
+      }
+    );
+});
+
+app.post('/session_logout', (request, response) => {
+    response.clearCookie('session');
+    response.redirect('/login');
+});
 
 
 const sendError = (response, error, message) => {
