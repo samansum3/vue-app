@@ -5,7 +5,7 @@ const firebaseAuthentication = (admin) => {
         admin.auth().verifySessionCookie(sessionCookie, true /** checkRevoked */).then(decodedClaims => {
             next();
         }).catch(error => {
-            res.redirect('/login');
+            res.status(200).json({success: false, message: 'Unauthorize'});
         });
     }
 }

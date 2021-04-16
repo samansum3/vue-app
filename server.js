@@ -86,7 +86,11 @@ app.post('/session_login', (request, response) => {
 
 app.post('/session_logout', (request, response) => {
     response.clearCookie('session');
-    response.redirect('/login');
+    response.status(200).json({success: true});
+});
+
+app.get('/auth_check', firebaseAuthentication(admin), (request, response) => {
+    response.status(200).json({success: true});
 });
 
 
@@ -114,24 +118,14 @@ app.post('/invoice/create', (request, response) => {
     });
 });
 
-app.get('/invoice/get-all', (request, response) => {
-    const token = request.headers.token;
-    if (!token) {
-        sendError(response, 'Authentication is none', 'Authentication required');
-        return;
-    }
-    admin.auth().verifyIdToken(token).then(token => {
-        console.info(token);
-        invoice.find((error, docs) => {
-            if (error) {
-                sendError(response, error, 'Failed to get invoices');
-            } else {
-                console.log('Get all invoice docs successfully.');
-                response.status(200).json(docs);
-            }
-        });
-    }).catch(error => {
-        sendError(response, error, 'Authorization required.');
+app.get('/invoice/get-all', firebaseAuthentication(admin), (request, response) => {
+    invoice.find((error, docs) => {
+        if (error) {
+            sendError(response, error, 'Failed to get invoices');
+        } else {
+            console.log('Get all invoice docs successfully.');
+            response.status(200).json(docs);
+        }
     });
 });
 

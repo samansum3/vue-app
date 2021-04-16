@@ -52,6 +52,7 @@
 <script>
 import firebase from 'firebase/app';
 import { required, email } from 'vuelidate/dist/validators.min';
+import axios from 'axios/dist/axios.min';
 
 export default {
     name: 'Login',
@@ -100,10 +101,20 @@ export default {
                 return;
             }
             this.isLoading = true;
-            firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password).then(() => {
+            firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password).then(auth => {
                 this.loginFailed = false;
-                this.isLoading = false;
-                console.log('loged in successfully');
+                auth.user.getIdToken().then(idToken => {
+                    firebase.auth().signOut();
+                    
+                    axios.post('/session_login/', {
+                        idToken
+                    }).then(() => {
+                        this.$router.push('/');
+                    }).catch(error => {
+                        this.isLoading = false;
+                        console.error(error);
+                    });
+                });
             }).catch(() => {
                 this.loginFailed = true;
                 this.isLoading = false;

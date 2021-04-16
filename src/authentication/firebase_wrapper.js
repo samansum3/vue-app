@@ -11,6 +11,7 @@ const initializeApp = () => {
         appId: process.env.VUE_APP_FIREBASE_APP_ID
     });
     firebase.auth().createUserWithEmailAndPassword = () => new Promise(resolve => { resolve(); });
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
 }
 
 class FirebaseWrapper {
