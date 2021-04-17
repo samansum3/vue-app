@@ -7,6 +7,7 @@ Vue.config.devtools = true
 
 import App from './App.vue';
 import Login from './components/login';
+import User from './components/user';
 
 import firebaseWrapper from './authentication/firebase_wrapper';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
@@ -36,14 +37,13 @@ Vue.use(Vuelidate);
 Vue.use(VueRouter);
 
 const Foo = { template: '<div>foo</div>' }
-const Bar = { template: '<div>bar</div>' }
 const Home = { template: '<h3>Home</h3>'}
 const PageNotFound = { template: '<h3>Page not found.</h3>'}
 
 const routes = [
   { name: 'Home', path: '/', component: Home },
-  { path: '/foo', component: Foo },
-  { path: '/bar', component: Bar },
+  { name: 'Foo', path: '/foo', component: Foo },
+  { name: 'User', path: '/user', component: User },
   { name: 'Login', path: '/login', component: Login },
   { name: 'PageNotFound', path: '/*', component: PageNotFound }
 ];

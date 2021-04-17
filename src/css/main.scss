@@ -1,5 +1,19 @@
 @import './longin';
 @import './navigation_bar';
+@import './user';
+
+html > body {
+    background-color: #f2f2f2;
+
+    .container-1280 {
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 1280px;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        width: 100%;
+    }
+}
 
 #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;

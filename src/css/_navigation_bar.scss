@@ -17,6 +17,10 @@
 
     }
     .navbar-nav {
+        &:hover {
+            outline: none;
+        }
+
         .nav-item {
             .nav-link {
                 color: #e0e0e0;
