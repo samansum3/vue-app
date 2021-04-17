@@ -1,0 +1,60 @@
+.user-wrapper {
+    .top-navigation {
+        background-color: white;
+        height: 4rem;
+        box-shadow: 0.25rem 0 1.25rem #d8d8d8;
+
+        .nav-control {
+            margin-top: 0.9rem;
+            
+            .search-box {
+                border-radius: 3rem;
+                text-align: center;
+                font-size: 0.875rem;
+                background-color: #f2f2f2;
+                border: none;
+            }
+            .btn-add {
+                background-color: #499cee;
+                color: white;
+                border-radius: 3rem;
+                padding-left: 2rem;
+                padding-right: 2rem;
+                font-size: 0.875rem;
+            }
+        }
+    }
+    .card-container {
+
+
+        .candy-card {
+            margin-top: 4rem;
+            min-height: 20rem;
+            background-color: white;
+            border-radius: 0.25rem;
+            box-shadow: 0.25rem 0.25rem 1.25rem #d8d8d8;
+            padding: 1rem;
+            padding-top: 0.5rem;
+
+            .table {
+                color: #7b7b7b;
+
+                tr {
+                    th, td {
+                        padding: 1.25rem;
+                        border-top: none;
+                        border-bottom: 1px solid #eeeeee;
+                        text-align: left;
+                        font-size: 0.875rem;
+                    }
+                    td {
+                        border-top: 1px solid #eeeeee imp !important;
+                    }
+                    .table-checkbox {
+                        width: 1rem;
+                    }
+                }
+            }
+        }
+    }
+}

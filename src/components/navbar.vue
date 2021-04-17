@@ -5,10 +5,10 @@
         </button>
         <router-link to="/" class="navbar-brand">App</router-link>
 
-        <div class="collapse navbar-collapse">
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                <li v-for="(item, index) in navbarItems" :key="'item-' + index" class="nav-item" :class="{'active': selectedNav == item.key}">
-                    <a class="nav-link text-uppercase" href="javascript:;" @click="selectedNav = item.key">{{ item.value }}<span class="sr-only">(current)</span></a>
+                <li v-for="(item, index) in navbarItems" :key="'item-' + index" class="nav-item" :class="{'active': $route.name == item.route.name}">
+                    <router-link :to="item.route.path" class="nav-link text-uppercase">{{ item.value }}</router-link>
                 </li>
             </ul>
             <form class="form-inline my-2 my-lg-0">
@@ -23,15 +23,22 @@ export default {
     name: 'Navbar',
     data() {
         return {
-            selectedNav: 'invoice',
             navbarItems: [
                 {
                     value: 'Invoice',
-                    key: 'invoice'
+                    key: 'invoice',
+                    route: {
+                        path: '/foo',
+                        name: 'Foo'
+                    }
                 },
                 {
                     value: 'User',
-                    key: 'user'
+                    key: 'user',
+                    route: {
+                        path: '/user',
+                        name: 'User'
+                    }
                 }
             ]
         }
