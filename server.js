@@ -29,6 +29,11 @@ app.use(cors({
 //initialize firebase admin app
 require('./database/firebase_admin_wrapper');
 
+const db = admin.firestore();
+const userCollection = 'users';
+const roleCollection = 'roles';
+const userRoleCollection = 'users_roles';
+
 
 //connect to db
 connectToMongodb();
@@ -72,16 +77,46 @@ app.use('/api', router);
 
 app.post('/session_login', (request, response) => {
     const expiresIn = 60 * 60 * 24 * 5 * 1000;
-    admin.auth().createSessionCookie(request.body.idToken, { expiresIn }).then(sessionCookie => {
-        // Set cookie policy for session cookie.
-        const options = { maxAge: expiresIn, httpOnly: true, secure: true };
-        response.cookie('session', sessionCookie, options);
-        response.end(JSON.stringify({ status: 'success' }));
-    },
-      (error) => {
-        response.status(401).send('UNAUTHORIZED REQUEST!');
-      }
-    );
+    const idToken = request.body.idToken;
+    admin.auth().verifyIdToken(idToken, true).then(user => {
+        db.collection(userCollection).doc(user.uid).get().then(doc => {
+            const user = doc.data();
+            user.createDate = user.createDate?.toDate();
+            user.lastLoginDate = user.lastLoginDate?.toDate();
+            user.logoutDate = user.logoutDate?.toDate();
+            user.modifiedDate = user.modifiedDate?.toDate();
+            user.roles = [];
+            
+            db.collection(userRoleCollection).where('userId', '==', user.uid).get().then(result => {
+                const docRefs = [];
+                result.forEach(doc => {
+                    let roleRef = db.collection(roleCollection).doc(doc.data().roleId);
+                    docRefs.push(roleRef);
+                });
+                db.getAll(...docRefs).then(result => {
+                    result.forEach(doc => {
+                        user.roles.push(doc.data().name);
+                    });
+                    if (user.roles.includes('User') || user.roles.includes('Aministrator')) {
+                        admin.auth().createSessionCookie(idToken, { expiresIn }).then(sessionCookie => {
+                            request.session.user = user;
+
+                            // Set cookie policy for session cookie.
+                            const options = { maxAge: expiresIn, httpOnly: true, secure: true };
+                            response.cookie('session', sessionCookie, options);
+                            response.end(JSON.stringify({ status: 'success' }));
+                        },
+                          (error) => {
+                            response.status(401).send('UNAUTHORIZED REQUEST!');
+                          }
+                        );
+                    } else {
+                        response.status(401).json({message: 'Unauthorized'});
+                    }
+                }).catch(console.error);
+            }).catch(console.error);
+        }).catch(console.error);
+    }).catch(console.error);
 });
 
 app.post('/session_logout', (request, response) => {
