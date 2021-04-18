@@ -10,11 +10,11 @@
                         <div v-if="loginFailed" class="text-warning pb-2">Wrong email or password</div>
                         <div class="group-control">
                             <input type="text" class="form-control" placeholder="Login" v-model="user.email" />
-                            <span class="text-danger" v-if="isInvalidEmail">Please input a valid email address</span>
+                            <span class="error-message" v-if="isInvalidEmail">Please input a valid email address</span>
                         </div>
                         <div class="group-control">
                             <input type="password" class="form-control" placeholder="Password" v-model="user.password" />
-                            <span class="text-danger" v-if="isEmptyPassword">Please enter password</span>
+                            <span class="error-message" v-if="isEmptyPassword">Please enter password</span>
                         </div>
                         <button
                             class="btn btn-login"
@@ -31,7 +31,7 @@
                     <form v-if="!isSent" @submit.prevent="sendResetPasswordEmail">
                         <div class="group-control">
                             <input type="text" class="form-control" placeholder="Email address" v-model="user.email" />
-                            <span class="text-danger" v-if="isInvalidEmail">Please input a valid email address</span>
+                            <span class="error-message" v-if="isInvalidEmail">Please input a valid email address</span>
                         </div>
                         <button
                             class="btn btn-login"

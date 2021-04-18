@@ -18,6 +18,7 @@ firebaseWrapper.initializeApp();
 //bootstrap
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 //custom css
 import './css/main.scss';

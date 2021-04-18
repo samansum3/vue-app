@@ -1,0 +1,42 @@
+.swal2-container.swal2-center {
+    background: rgba(255, 255, 255,0.85);
+
+    .swal2-popup {
+        box-shadow: 0.25rem 0.25rem 1.25rem #d2d2d2;
+        padding: 0;
+
+        .swal2-header {
+            background-image: linear-gradient(to right, #489bee, #5fc2cf);
+            background-image: -moz-linear-gradient(to right, #489bee, #5fc2cf);
+            background-image: -webkit-gradient(to right, #489bee, #5fc2cf);
+            background-image: -webkit-linear-gradient(to right, #489bee, #5fc2cf);
+            background-image: -o-linear-gradient(to right, #489bee, #5fc2cf);
+            background-image: -ms-linear-gradient(to right, #489bee, #5fc2cf);
+            
+            border-top-left-radius: 0.25rem;
+            border-top-right-radius: 0.25rem;
+
+            .swal2-title {
+                font-weight: normal;
+                padding: 1rem;
+                margin: 0;
+                color: white;
+                font-size: 1.25rem;
+            }
+            .swal2-close {
+                box-shadow: none !important;
+                font-size: 2.8rem;
+                color: white;
+            }
+        }
+        .swal2-content {
+            padding: 0 1rem;
+            
+            .popup-footer {
+                padding: 1rem 0 1.75rem 0;
+                display: flex;
+                justify-content: flex-end;
+            }
+        }
+    }
+}
