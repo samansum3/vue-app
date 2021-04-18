@@ -1,6 +1,8 @@
 @import './longin';
 @import './navigation_bar';
 @import './user';
+@import './sweetalter2';
+@import './button';
 
 html > body {
     background-color: #f2f2f2;
@@ -12,6 +14,36 @@ html > body {
         padding-left: 1rem;
         padding-right: 1rem;
         width: 100%;
+    }
+
+    input {
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .group-control {
+        text-align: left;
+        padding-bottom: 1.75rem;
+        
+        .form-control {
+            box-shadow: none;
+            font-size: 0.875rem;
+            background-color: #f2f2f2;
+            border: none;
+
+            &::placeholder {
+                color: #a6a6a6;
+            }
+        }
+        label {
+            font-size: 0.875rem;
+            padding-top: 0.5rem;
+        }
+        .error-message {
+            font-size: 0.75rem;
+            color: red;
+        }
     }
 }
 

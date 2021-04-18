@@ -1,0 +1,26 @@
+.btn {
+    box-shadow: none !important;
+    padding: 0.35rem 2.5rem;
+    
+    &-primary {
+        background-color: #5dc4e1;
+        border-color: #5dc4e1;
+
+        &:hover,
+        &:active,
+        &:focus {
+            background-color: #49a7c1 !important;
+            border-color: #49a7c1 !important;;
+        }
+    }
+    &-outline-primary {
+        border-color: #5dc4e1;
+        color: #5dc4e1;
+
+        &:hover,
+        &:active {
+            background-color: #5dc4e1 !important;;
+            border-color: #5dc4e1 !important;;
+        }
+    }
+}

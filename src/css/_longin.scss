@@ -20,9 +20,10 @@
         form {
             .group-control {
                 padding-bottom: 1rem;
+                text-align: center;
 
                 span {
-                    font-size: 14px;
+                    font-size: 0.875rem;
                 }
             }
             .form-control {
@@ -31,10 +32,6 @@
                 box-shadow: none !important;
                 border: none;
                 height: 3.2rem !important;
-
-                &::placeholder {
-                    color: #a6a6a6;
-                }
             }
             .btn-login {
                 color: white;

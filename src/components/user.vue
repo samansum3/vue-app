@@ -6,7 +6,7 @@
                     <div class="mr-4">
                         <input type="text" v-model="keywords" placeholder="Search" class="form-control search-box shadow-none">
                     </div>
-                    <button class="btn btn-add shadow-none">
+                    <button class="btn btn-add shadow-none" @click="createUserAccount">
                         <span>Add User</span>
                     </button>
                 </div>
@@ -43,10 +43,11 @@
 <script>
 import axios from 'axios/dist/axios.min';
 import DateFormater from '../mixins/date_format.es';
+import CreateUserPopup from '../mixins/create_user_popup.es';
 
 export default {
     name: 'User',
-    mixins: [DateFormater],
+    mixins: [DateFormater, CreateUserPopup],
     data() {
         return {
             columns: ['Name', 'Email', 'Role', 'Create Date'],
@@ -88,6 +89,11 @@ export default {
             }).catch(error => {
                 console.error(error);
                 this.isLoading = false;
+            });
+        },
+        createUserAccount() {
+            this.openCreateUserPopup(() => {
+                console.log('Created a user');
             });
         }
     }
