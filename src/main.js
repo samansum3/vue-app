@@ -1,9 +1,8 @@
-import Vue from 'vue/dist/vue.common';
+import Vue from 'vue/dist/vue.common.prod';
 import { Vuelidate } from 'vuelidate/dist/vuelidate.min';
 import VueRouter from 'vue-router/dist/vue-router.min';
 
 Vue.config.productionTip = false;
-Vue.config.devtools = true
 
 import App from './App.vue';
 import Login from './components/login';
