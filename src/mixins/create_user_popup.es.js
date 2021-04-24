@@ -1,6 +1,7 @@
 import Dialog from './dialog.es';
 import { required, email, minLength } from 'vuelidate/dist/validators.min';
 import axios from 'axios/dist/axios.min';
+import Dropdown from '../components/dropdown.vue';
 
 const CreateUserPopup = {
     mixins: [Dialog],
@@ -8,8 +9,12 @@ const CreateUserPopup = {
         openCreateUserPopup(callback = () => {}) {
             this.openDialog({
                 vue: {
+                    components: {
+                      Dropdown
+                    },
                     data() {
                         return {
+                            roles: [],
                             user: {
                                 firstName: '',
                                 lastName: '',
@@ -51,7 +56,22 @@ const CreateUserPopup = {
                             return 'Password don\'t match';
                         }
                     },
+                    created() {
+                        this.getRoles();
+                    },
                     methods: {
+                        getRoles() {
+                            this.isLoading = true;
+                            axios.get('/api/role/get').then(response => {
+                                this.isLoading = false;
+                                if (response.data.success) {
+                                    this.roles = response.data.data;
+                                }
+                            }).catch(error => {
+                                this.isLoading = false;
+                                console.error(error);
+                            });
+                        },
                         createUserAccount() {
                             this.$v.user.$touch();
                             if (this.user.password !== this.user.confirmPassword) {
@@ -120,7 +140,12 @@ const CreateUserPopup = {
                                         <label>Role</label>
                                     </div>
                                     <div class="col-10">
-                                        <input type="text" placeholder="Select role" class="form-control" v-model="user.role" />
+                                        <dropdown
+                                            placeholder="Select Role"
+                                            value="user.role"
+                                            :items="roles"
+                                            @change="user.role = $event"
+                                        ></dropdown>
                                         <span class="error-message" v-if="$v.user.role.$error">Role is required</span>
                                     </div>
                                 </div>
