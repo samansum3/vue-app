@@ -1,26 +1,46 @@
+@import './mixins/disabled';
+
+@mixin btn-primary {
+    background-color: #5dc4e1;
+    border-color: #5dc4e1;
+}
+
+@mixin btn-outline-primary {
+    border-color: #5dc4e1;
+    color: #5dc4e1;
+}
+
 .btn {
     box-shadow: none !important;
     padding: 0.35rem 2.5rem;
     
     &-primary {
-        background-color: #5dc4e1;
-        border-color: #5dc4e1;
+        @include btn-primary;
 
         &:hover,
         &:active,
         &:focus {
             background-color: #49a7c1 !important;
-            border-color: #49a7c1 !important;;
+            border-color: #49a7c1 !important;
+        }
+
+        &:disabled {
+            @include disabled;
+            @include btn-primary;
         }
     }
     &-outline-primary {
-        border-color: #5dc4e1;
-        color: #5dc4e1;
-
+        @include btn-outline-primary;
         &:hover,
         &:active {
-            background-color: #5dc4e1 !important;;
-            border-color: #5dc4e1 !important;;
+            background-color: #5dc4e1 !important;
+            border-color: #5dc4e1 !important;
+            color: white !important;
+        }
+
+        &:disabled {
+            @include disabled;
+            @include btn-outline-primary;
         }
     }
 }

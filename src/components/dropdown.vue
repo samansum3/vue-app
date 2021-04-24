@@ -7,7 +7,7 @@
             aria-haspopup="true"
             aria-expanded="false"
         >
-            {{ getSelectedLabel }}
+            <span :class="{'placeholder': !selectedItem}">{{ getSelectedLabel }}</span>
         </div>
         <div class="dropdown-menu" :aria-labelledby="target">
             <div v-for="(item, index) in items" :key="index">

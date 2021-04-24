@@ -5,6 +5,8 @@
 @import './sweetalter2';
 @import './button';
 @import './dropdown';
+@import './mixins/disabled';
+@import './text';
 
 html > body {
     background-color: #f2f2f2;
@@ -58,6 +60,5 @@ html > body {
 }
 
 .disabled {
-    opacity: 0.65;
-    cursor: not-allowed !important;
+    @include disabled;
 }

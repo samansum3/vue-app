@@ -21,9 +21,10 @@ const CreateUserPopup = {
                                 emailAddress: '',
                                 password: '',
                                 confirmPassword: '',
-                                role: 0
+                                role: null
                             },
-                            notMatchPassword: false
+                            notMatchPassword: false,
+                            isLoading: false,
                         }
                     },
                     validations: {
@@ -65,7 +66,7 @@ const CreateUserPopup = {
                             axios.get('/api/role/get').then(response => {
                                 this.isLoading = false;
                                 if (response.data.success) {
-                                    this.roles = response.data.data;
+                                    this.roles = response.data.result;
                                 }
                             }).catch(error => {
                                 this.isLoading = false;
@@ -81,13 +82,17 @@ const CreateUserPopup = {
                             if (this.$v.$error) {
                                 return;
                             }
-
+                            
+                            this.isLoading = true;
                             axios.post('/api/user/create/', this.user).then(response => {
                                 if (response.data.success) {
                                     callback(response.data.result);
                                     this.dialog.close();
                                 }
-                            }).catch(console.error);
+                            }).catch(error => {
+                                console.error(error);
+                                this.isLoading = false;
+                            });
                         }
                     }
                 },
@@ -98,6 +103,7 @@ const CreateUserPopup = {
                         popup: ''
                     },
                     content: `
+                        <template>
                         <div class="container pt-4">
                             <div calss="form-body">
                                 <div class="row group-control">
@@ -106,11 +112,11 @@ const CreateUserPopup = {
                                     </div>
                                     <div class="col-5">
                                         <input type="text" placeholder="First name" class="form-control" v-model="user.firstName" />
-                                        <span class="error-message" v-if="invalidFirstName">Please input your first name</span>
+                                        <span class="error-message" v-if="invalidFirstName">Please input first name</span>
                                     </div>
                                     <div class="col-5">
                                         <input type="text" placeholder="Last name" class="form-control" v-model="user.lastName" />
-                                        <span class="error-message" v-if="invalidLastName">Please input your last name</span>
+                                        <span class="error-message" v-if="invalidLastName">Please input last name</span>
                                     </div>
                                 </div>
                                 <div class="row group-control">
@@ -151,10 +157,19 @@ const CreateUserPopup = {
                                 </div>
                             </div>
                             <div class="popup-footer">
-                                <button class="btn btn-outline-primary mr-3" @click="dialog.close()">Cancel</button>
-                                <button class="btn btn-primary" @click="createUserAccount">Create</button>
+                                <button
+                                    class="btn btn-outline-primary mr-3"
+                                    :disabled="isLoading"
+                                    @click="dialog.close()"
+                                >Cancel</button>
+                                <button
+                                    class="btn btn-primary"
+                                    :disabled="isLoading"
+                                    @click="createUserAccount"
+                                >Create</button>
                             </div>
                         </div>
+                        </template>
                     `
                 }
             });
