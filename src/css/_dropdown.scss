@@ -1,0 +1,28 @@
+.dropdown-wrapper {
+    position: relative;
+
+    .dropdown-menu {
+        width: 100%;
+        box-shadow: 0.125rem 0.125rem 0.5rem #dcdcdc;
+
+        .dropdown-item {
+            padding: .5rem .5rem;
+            cursor: pointer;
+            outline: none;
+            color: #495057;
+
+            &:active {
+                background-color: #49a7c1;
+                color: white;
+            }
+        }
+    }
+    .dropdown-toggle {
+        
+        &:after {
+            position: absolute;
+            top: 0.9rem;
+            right: 0.75rem;
+        }
+    }
+}
