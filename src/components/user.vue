@@ -45,13 +45,23 @@ import axios from 'axios/dist/axios.min';
 import DateFormater from '../mixins/date_format.es';
 import CreateUserPopup from '../mixins/create_user_popup.es';
 
+const getUsers = (callback) => {
+    axios.get('/api/user/get-all/').then(response => {
+        if (response.data.success) {
+            callback(vm => vm.users = response.data.result);
+        }
+    }).catch(error => {
+        console.error(error);
+        callback();
+    });
+}
+
 export default {
     name: 'User',
     mixins: [DateFormater, CreateUserPopup],
     data() {
         return {
             columns: ['Name', 'Email', 'Role', 'Create Date'],
-            isLoading: false,
             users: [],
             keywords: ''
         }
@@ -76,21 +86,10 @@ export default {
             });
         }
     },
-    created() {
-        this.getUsers();
+    beforeRouteEnter(to, from, next) {
+        getUsers(next, to, from);
     },
     methods: {
-        getUsers() {
-            axios.get('/api/user/get-all/').then(response => {
-                this.isLoading = false;
-                if (response.data.success) {
-                    this.users = response.data.result;
-                }
-            }).catch(error => {
-                console.error(error);
-                this.isLoading = false;
-            });
-        },
         createUserAccount() {
             this.openCreateUserPopup(user => this.users.push(user));
         }
