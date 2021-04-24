@@ -1,9 +1,8 @@
-import Vue from 'vue/dist/vue.common';
+import Vue from 'vue/dist/vue.common.prod';
 import { Vuelidate } from 'vuelidate/dist/vuelidate.min';
 import VueRouter from 'vue-router/dist/vue-router.min';
 
 Vue.config.productionTip = false;
-Vue.config.devtools = true
 
 import App from './App.vue';
 import Login from './components/login';
@@ -16,7 +15,9 @@ import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 firebaseWrapper.initializeApp();
 
 //bootstrap
-import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/js/bootstrap.min';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import 'sweetalert2/dist/sweetalert2.min.css';
 

@@ -92,9 +92,7 @@ export default {
             });
         },
         createUserAccount() {
-            this.openCreateUserPopup(() => {
-                console.log('Created a user');
-            });
+            this.openCreateUserPopup(user => this.users.push(user));
         }
     }
 }
