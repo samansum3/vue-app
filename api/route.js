@@ -5,6 +5,7 @@ const admin = require('firebase-admin');
 const db = admin.firestore();
 const userCollection = 'users';
 const rolesCollection = 'roles';
+const userRoleCollection = 'users_roles';
 
 router.get('/role/get', (reqeust, response) => {
     db.collection(rolesCollection).get().then(result => {
@@ -15,14 +16,35 @@ router.get('/role/get', (reqeust, response) => {
                 value: doc.data().name
             });
         });
-        response.status(200).json({success: true, data: roles});
+        response.status(200).json({success: true, result: roles});
     }).catch(error => sendError(response, error));
 });
 
 router.post('/user/create', (request, response) => {
     const user = request.body;
-    db.collection(userCollection).doc(user.uid).set(user).then(result => {
-        response.status(200).json(result);
+    admin.auth().createUser({
+        email: user.emailAddress,
+        password: user.password,
+        emailVerified: false,
+        displayName: user.firstName + ' ' + user.lastName,
+        disabled: false
+    }).then(userRecord => {
+        const userData = {
+            uid: userRecord.uid,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            screenName: user.firstName,
+            emailAddress: user.emailAddress,
+            createDate: new Date()
+        };
+        db.collection(userCollection).doc(userRecord.uid).set(userData).then(() => {
+            userData.checked = false;
+            sendSuccess(response, userData);
+        }).catch(error => sendError(response, error));
+        db.collection(userRoleCollection).add({
+            roleId: user.role,
+            userId: userRecord.uid
+        }).catch(error => sendError(response, error));
     }).catch(error => sendError(response, error));
 });
 
@@ -39,6 +61,10 @@ router.use('/user/:userId', (request, response) => {
         .then(doc => response.status(200).json(getUser(doc.data())))
         .catch(console.error);
 });
+
+const sendSuccess = (response, data) => {
+    response.status(200).json({success: true, result: data});
+}
 
 const sendError = (response, error) => {
     console.error(error);
