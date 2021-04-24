@@ -4,6 +4,20 @@ const admin = require('firebase-admin');
 
 const db = admin.firestore();
 const userCollection = 'users';
+const rolesCollection = 'roles';
+
+router.get('/role/get', (reqeust, response) => {
+    db.collection(rolesCollection).get().then(result => {
+        const roles = [];
+        result.forEach(doc => {
+            roles.push({
+                key: doc.id,
+                value: doc.data().name
+            });
+        });
+        response.status(200).json({success: true, data: roles});
+    }).catch(error => sendError(response, error));
+});
 
 router.post('/user/create', (request, response) => {
     const user = request.body;
