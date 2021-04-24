@@ -45,10 +45,12 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(csrf({ cookie: true }));
 
+const expiresIn = 60 * 60 * 6 * 1000;
+
 app.use(session({
     secret: process.env.VUE_APP_SESSION_SECRET,
     cookie: {
-        maxAge: 1000 * 60 * 60,
+        maxAge: expiresIn,
         secure: process.env.NODE_ENV === 'production'
     },
     saveUninitialized: false,
@@ -76,7 +78,6 @@ const router = require('./api/route');
 app.use('/api', router);
 
 app.post('/session_login', (request, response) => {
-    const expiresIn = 60 * 60 * 24 * 5 * 1000;
     const idToken = request.body.idToken;
     admin.auth().verifyIdToken(idToken, true).then(user => {
         db.collection(userCollection).doc(user.uid).get().then(doc => {
