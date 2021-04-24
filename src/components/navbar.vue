@@ -12,15 +12,20 @@
                 </li>
             </ul>
             <form class="form-inline my-2 my-lg-0">
-                <img src="../../public/saman.jpeg" class="user-avatar" alt="user-avatar">
+                <user-avatar />
             </form>
         </div>
     </nav>
 </template>
 
 <script>
+import UserAvatar from './user_avatar';
+
 export default {
     name: 'Navbar',
+    components: {
+        UserAvatar
+    },
     data() {
         return {
             navbarItems: [
