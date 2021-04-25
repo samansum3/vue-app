@@ -14,7 +14,9 @@ const CreateUserPopup = {
             const userValidation = {
                 firstName: { required },
                 lastName: { required },
-                role: { required }
+                role: {
+                    id: { required }
+                }
             };
 
             if (!isUpdate) {
@@ -39,7 +41,9 @@ const CreateUserPopup = {
                                 emailAddress: '',
                                 password: '',
                                 confirmPassword: '',
-                                role: null
+                                role: {
+                                    id: null
+                                }
                             },
                             notMatchPassword: false,
                             isLoading: false,
@@ -105,7 +109,7 @@ const CreateUserPopup = {
                                 data.uid = this.user.uid;
                                 data.firstName = this.user.firstName;
                                 data.lastName = this.user.lastName;
-                                data.role = this.user.role;
+                                data.role = this.user.role
                             }
                             axios.post(url, data).then(response => {
                                 if (response.data.success) {
@@ -171,11 +175,12 @@ const CreateUserPopup = {
                                     <div class="col-10">
                                         <dropdown
                                             placeholder="Select Role"
-                                            value="user.role"
+                                            :value="user.role.id"
                                             :items="roles"
-                                            @change="user.role = $event"
+                                            :required-item="true"
+                                            @change="user.role = {id: $event.key, name: $event.value}"
                                         ></dropdown>
-                                        <span class="error-message" v-if="$v.user.role.$error">Role is required</span>
+                                        <span class="error-message" v-if="$v.user.role.id.$error">Role is required</span>
                                     </div>
                                 </div>
                             </div>

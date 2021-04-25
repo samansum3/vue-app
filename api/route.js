@@ -37,16 +37,18 @@ router.post('/user/create', async (request, response) => {
             lastName: user.lastName,
             screenName: user.firstName,
             emailAddress: user.emailAddress,
-            roleId: user.role,
+            roleId: user.role.id,
             createDate: new Date(),
             ceatedBy: ceator
         };
         await db.collection(userCollection).doc(userRecord.uid).set(userData);
 
-        const roleDoc = await db.collection(rolesCollection).doc(user.role).get();
+        const roleDoc = await db.collection(rolesCollection).doc(user.role.id).get();
 
-        userData.role = roleDoc.id;
-        userData.roleName = roleDoc.data().name;
+        userData.role = {
+            id: roleDoc.id,
+            name: roleDoc.data().name
+        };
         userData.checked = false;
 
         sendSuccess(response, userData);
@@ -60,12 +62,8 @@ router.post('/user/update', (request, response) => {
     db.collection(userCollection).doc(user.uid).set({
         firstName: user.firstName,
         lastName: user.lastName,
-<<<<<<< Updated upstream
-        roleId: user.role
-=======
         roleId: user.role.id,
         modifiedDate: new Date()
->>>>>>> Stashed changes
     }, {
         merge: true
     }).then(() => sendSuccess(response)).catch(error => sendError(response, error));
@@ -119,8 +117,11 @@ const getUser = async (doc) => {
     user.logoutDate = user.logoutDate?.toDate();
     user.modifiedDate = user.modifiedDate?.toDate();
     user.checked = false;
-    user.role = roleDoc.id;
-    user.roleName = roleDoc.data().name;
+    user.role = {
+        id: roleDoc.id,
+        name: roleDoc.data().name
+    };
+
     return user;
 }
 

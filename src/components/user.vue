@@ -32,7 +32,7 @@
                             </td>
                             <td>{{ user.firstName + ' ' + user.lastName }}</td>
                             <td>{{ user.emailAddress }}</td>
-                            <td>{{ user.roles }}</td>
+                            <td>{{ user.role.name }}</td>
                             <td>{{ timestampToString(new Date(user.createDate).getTime()) }}</td>
                             <td class="text-right w-55">
                                 <three-dot-dropdown
