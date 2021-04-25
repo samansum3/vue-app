@@ -85,11 +85,11 @@ export default {
     computed: {
         checkAll: {
             set(checked) {
-                this.users.forEach(user => user.checked = checked);
+                this.filteredUser.forEach(user => user.checked = checked);
             },
             get() {
-                const checkedUser = this.users.filter(user => user.checked).length;
-                return this.users.length > 0 && this.users.length === checkedUser;
+                const checkedUser = this.filteredUser.filter(user => user.checked).length;
+                return this.filteredUser.length > 0 && this.filteredUser.length === checkedUser;
             }
         },
         filteredUser() {
