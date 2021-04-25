@@ -32,7 +32,6 @@ require('./database/firebase_admin_wrapper');
 const db = admin.firestore();
 const userCollection = 'users';
 const roleCollection = 'roles';
-const userRoleCollection = 'users_roles';
 
 
 //connect to db
@@ -77,51 +76,52 @@ app.use(function (err, req, res, next) {
 const router = require('./api/route');
 app.use('/api', router);
 
-app.post('/session_login', (request, response) => {
+app.post('/session_login', async (request, response) => {
     const idToken = request.body.idToken;
-    admin.auth().verifyIdToken(idToken, true).then(user => {
-        db.collection(userCollection).doc(user.uid).get().then(doc => {
-            const user = doc.data();
-            user.createDate = user.createDate?.toDate();
-            user.lastLoginDate = user.lastLoginDate?.toDate();
-            user.logoutDate = user.logoutDate?.toDate();
-            user.modifiedDate = user.modifiedDate?.toDate();
-            user.roles = [];
-            
-            db.collection(userRoleCollection).where('userId', '==', user.uid).get().then(result => {
-                const docRefs = [];
-                result.forEach(doc => {
-                    let roleRef = db.collection(roleCollection).doc(doc.data().roleId);
-                    docRefs.push(roleRef);
-                });
-                db.getAll(...docRefs).then(result => {
-                    result.forEach(doc => {
-                        user.roles.push(doc.data().name);
-                    });
-                    if (user.roles.includes('User') || user.roles.includes('Aministrator')) {
-                        admin.auth().createSessionCookie(idToken, { expiresIn }).then(sessionCookie => {
-                            request.session.user = user;
 
-                            // Set cookie policy for session cookie.
-                            const options = { maxAge: expiresIn, httpOnly: true, secure: true };
-                            response.cookie('session', sessionCookie, options);
-                            response.end(JSON.stringify({ status: 'success' }));
-                        },
-                          (error) => {
-                            response.status(401).send('UNAUTHORIZED REQUEST!');
-                          }
-                        );
-                    } else {
-                        response.status(401).json({message: 'Unauthorized'});
-                    }
-                }).catch(console.error);
-            }).catch(console.error);
-        }).catch(console.error);
-    }).catch(console.error);
+    try {
+        const authUser = await admin.auth().verifyIdToken(idToken, true);
+        const userDoc = await db.collection(userCollection).doc(authUser.uid).get();
+
+        const user = userDoc.data();
+        user.createDate = user.createDate?.toDate();
+        user.lastLoginDate = user.lastLoginDate?.toDate();
+        user.logoutDate = user.logoutDate?.toDate();
+        user.modifiedDate = user.modifiedDate?.toDate();
+
+        const roleDoc = await db.collection(roleCollection).doc(user.roleId).get();
+
+        user.role = {
+            id: roleDoc.id,
+            name: roleDoc.data().name
+        }
+
+        if (user.role.name === 'User' || user.role.name === 'Aministrator') { //Make sure that only created user can login
+            admin.auth().createSessionCookie(idToken, { expiresIn }).then(sessionCookie => {
+                request.session.user = user;
+
+                // Set cookie policy for session cookie.
+                const options = { maxAge: expiresIn, httpOnly: true, secure: true };
+                response.cookie('session', sessionCookie, options);
+                response.end(JSON.stringify({ status: 'success' }));
+            }, (error) => {
+                sendError(response, error, 401, 'Unauthorized request');
+            });
+        } else {
+            sendError(response, 'The user was created unauthorized' + JSON.stringify(user), 401, 'Unauthorized');
+        }
+    } catch(error) {
+        sendError(response, error, 500, 'Cannot log in');
+    }
 });
 
 app.post('/session_logout', (request, response) => {
     response.clearCookie('session');
+    request.session.destroy(error => {
+        if (error) {
+            console.log(error);
+        }
+    });
     response.status(200).json({success: true});
 });
 
@@ -130,9 +130,9 @@ app.get('/auth_check', firebaseAuthentication(admin), (request, response) => {
 });
 
 
-const sendError = (response, error, message) => {
+const sendError = (response, error, status, message) => {
     console.log('ERROR ' + error);
-    response.status(500).json({message: message});
+    response.status(status).json({success: false, message: message});
     // response.redirect('/');
 }
 
@@ -157,7 +157,7 @@ app.post('/invoice/create', (request, response) => {
 app.get('/invoice/get-all', firebaseAuthentication(admin), (request, response) => {
     invoice.find((error, docs) => {
         if (error) {
-            sendError(response, error, 'Failed to get invoices');
+            sendError(response, error, 500, 'Failed to get invoices');
         } else {
             console.log('Get all invoice docs successfully.');
             response.status(200).json(docs);
@@ -182,7 +182,7 @@ app.put('/invoice/update', (request, response) => {
     const document = request.body;
     invoice.findByIdAndUpdate(id, document, (error, doc) => {
         if (error) {
-            sendError(response, error, 'Failed to update invoice.');
+            sendError(response, error, 500, 'Failed to update invoice.');
         } else {
             console.log('Updated invoice successfully');
             response.status(200).json(doc);
@@ -193,7 +193,7 @@ app.put('/invoice/update', (request, response) => {
 app.delete('/invoice/delete', (request, response) => {
     invoice.findByIdAndDelete(request.query.id, (error, doc) => {
         if (error) {
-            sendError(response, error, 'Failed to delete invoice.');
+            sendError(response, error, 500, 'Failed to delete invoice.');
         } else {
             console.log('Invoice was deleted successfully');
             response.status(200).json(doc);
