@@ -1,12 +1,14 @@
 <template>
-    <div class="user-wrapper">
+    <div class="user-wrapper mb-5">
         <div class="top-navigation">
             <div class="container-1280 d-flex">
                 <div class="ml-auto d-flex nav-control">
-                    <div class="mr-4">
-                        <input type="text" v-model="keywords" placeholder="Search" class="form-control search-box shadow-none">
+                    <div class="mr-4 search-box-wrapper">
+                        <input type="text" v-model="keywords" placeholder="Search" class="form-control search-box max-width-215">
+                        <b-icon-search />
                     </div>
                     <button class="btn btn-add shadow-none" @click="createUserAccount">
+                        <b-icon-plus-circle />
                         <span>Add User</span>
                     </button>
                 </div>
@@ -116,8 +118,17 @@ export default {
             }, user);
         },
         deleteUser(user) {
-            //TODO open popup confirm to delete
-            console.log('delete' + JSON.stringify(user));
+            //TODO popup to confirm
+            axios.delete('/api/user/delete', {
+                data: {
+                    uid: user.uid
+                }
+            }).then(response => {
+                if (response.data.success) {
+                    const index = this.users.findIndex(u => u.uid === user.uid);
+                    this.users.splice(index, 1);
+                }
+            }).catch(console.error);
         },
         createUserAccount() {
             this.openCreateUserPopup(user => this.users.push(user));

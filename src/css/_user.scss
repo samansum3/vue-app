@@ -7,20 +7,46 @@
         .nav-control {
             margin-top: 0.9rem;
             
-            .search-box {
-                border-radius: 3rem;
-                text-align: center;
-                font-size: 0.875rem;
-                background-color: #f2f2f2;
-                border: none;
+            .search-box-wrapper {
+                position: relative;
+
+                .search-box {
+                    border-radius: 3rem;
+                    padding-left: 3rem;
+                    font-size: 0.875rem;
+                    background-color: #f2f2f2;
+                    border: none;
+                    box-shadow: none;
+    
+                    &::placeholder {
+                        color: #b3b3b3;
+                    }
+                }
+
+                svg {
+                    color: #b3b3b3;
+                    top: 0.562rem;
+                    left: 1.25rem;
+                    position: absolute;
+                }
             }
             .btn-add {
                 background-color: #499cee;
                 color: white;
                 border-radius: 3rem;
-                padding-left: 2rem;
-                padding-right: 2rem;
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
                 font-size: 0.875rem;
+                position: relative;
+
+                svg {
+                    top: 0.438rem;
+                    left: 1.25rem;
+                    position: absolute;
+                }
+                span {
+                    padding-left: 1.5rem;
+                }
             }
         }
     }

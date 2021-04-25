@@ -9,7 +9,7 @@ import Login from './components/login';
 import User from './components/user';
 
 import firebaseWrapper from './authentication/firebase_wrapper';
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
+import { BootstrapVue, IconsPlugin, BootstrapVueIcons } from 'bootstrap-vue';
 
 //init firebase auth
 firebaseWrapper.initializeApp();
@@ -19,6 +19,7 @@ import 'bootstrap/dist/js/bootstrap.min';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
+import 'bootstrap-vue/dist/bootstrap-vue-icons.min.css';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
 //custom css
@@ -35,6 +36,7 @@ axios.defaults.withCredentials = true;
 
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
+Vue.use(BootstrapVueIcons);
 Vue.use(Vuelidate);
 Vue.use(VueRouter);
 

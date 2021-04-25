@@ -4,3 +4,10 @@
         width: 3.438rem !important;
     }
 }
+.max {
+    &-width {
+        &-215 {
+            max-width: 13.438rem;
+        }
+    }
+}

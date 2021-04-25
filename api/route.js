@@ -59,6 +59,13 @@ router.post('/user/update', (request, response) => {
     }).then(() => sendSuccess(response)).catch(error => sendError(response, error));
 });
 
+router.delete('/user/delete', (request, response) => {
+    console.log(request.body.uid);
+    db.collection(userCollection).doc(request.body.uid).delete()
+        .then(() => sendSuccess(response))
+        .catch(error => sendError(response, error));
+});
+
 router.use('/user/get-all', (request, response) => {
     db.collection(userCollection).get().then(result => {
         const users = [];
