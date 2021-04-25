@@ -1,12 +1,14 @@
 <template>
-    <div class="user-wrapper">
+    <div class="user-wrapper mb-5">
         <div class="top-navigation">
             <div class="container-1280 d-flex">
                 <div class="ml-auto d-flex nav-control">
-                    <div class="mr-4">
-                        <input type="text" v-model="keywords" placeholder="Search" class="form-control search-box shadow-none">
+                    <div class="search-box-wrapper">
+                        <input type="text" v-model="keywords" placeholder="Search" class="form-control search-box max-width-215">
+                        <b-icon-search />
                     </div>
-                    <button class="btn btn-add shadow-none" @click="createUserAccount">
+                    <button v-if="isAdmin" class="btn btn-add shadow-none ml-4" @click="createUserAccount">
+                        <b-icon-plus-circle />
                         <span>Add User</span>
                     </button>
                 </div>
@@ -30,8 +32,14 @@
                             </td>
                             <td>{{ user.firstName + ' ' + user.lastName }}</td>
                             <td>{{ user.emailAddress }}</td>
-                            <td>{{ user.roles }}</td>
+                            <td>{{ user.role.name }}</td>
                             <td>{{ timestampToString(new Date(user.createDate).getTime()) }}</td>
+                            <td v-if="isAdmin" class="text-right w-55">
+                                <three-dot-dropdown
+                                    :items="dropdownItems"
+                                    @action="performAction($event, user)"
+                                ></three-dot-dropdown>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -44,11 +52,15 @@
 import axios from 'axios/dist/axios.min';
 import DateFormater from '../mixins/date_format.es';
 import CreateUserPopup from '../mixins/create_user_popup.es';
+import ThreeDotDropdown from './three_dot_dropdown';
 
 const getUsers = (callback) => {
     axios.get('/api/user/get-all/').then(response => {
         if (response.data.success) {
-            callback(vm => vm.users = response.data.result);
+            callback(vm => {
+                vm.users = response.data.result
+                vm.isAdmin = response.data.admin;
+            });
         }
     }).catch(error => {
         console.error(error);
@@ -59,21 +71,29 @@ const getUsers = (callback) => {
 export default {
     name: 'User',
     mixins: [DateFormater, CreateUserPopup],
+    components: {
+        ThreeDotDropdown
+    },
     data() {
         return {
             columns: ['Name', 'Email', 'Role', 'Create Date'],
+            isAdmin: false,
             users: [],
-            keywords: ''
+            keywords: '',
+            dropdownItems: [
+                {key: 'updateUser', value: 'Update'},
+                {key: 'deleteUser', value: 'Delete'}
+            ]
         }
     },
     computed: {
         checkAll: {
             set(checked) {
-                this.users.forEach(user => user.checked = checked);
+                this.filteredUser.forEach(user => user.checked = checked);
             },
             get() {
-                const checkedUser = this.users.filter(user => user.checked).length;
-                return this.users.length > 0 && this.users.length === checkedUser;
+                const checkedUser = this.filteredUser.filter(user => user.checked).length;
+                return this.filteredUser.length > 0 && this.filteredUser.length === checkedUser;
             }
         },
         filteredUser() {
@@ -90,6 +110,30 @@ export default {
         getUsers(next, to, from);
     },
     methods: {
+        performAction(key, user) {
+            this[key](user);
+        },
+        updateUser(user) {
+            this.openCreateUserPopup(updatedUser => {
+                const index = this.users.findIndex(u => u.uid === updatedUser.uid);
+                if (index !== -1) {
+                    this.users.splice(index, 1, updatedUser);
+                }
+            }, user);
+        },
+        deleteUser(user) {
+            //TODO popup to confirm
+            axios.delete('/api/user/delete', {
+                data: {
+                    uid: user.uid
+                }
+            }).then(response => {
+                if (response.data.success) {
+                    const index = this.users.findIndex(u => u.uid === user.uid);
+                    this.users.splice(index, 1);
+                }
+            }).catch(console.error);
+        },
         createUserAccount() {
             this.openCreateUserPopup(user => this.users.push(user));
         }
