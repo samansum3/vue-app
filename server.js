@@ -17,6 +17,12 @@ const firebaseAuthentication = require('./middleware/authentication');
 
 const app = express();
 
+//TODO refactor
+const userRole = {
+    admin: 'adVNl0tA4SWhKphJd9bP',
+    user: '4O3c5MDTj6hS60GmKWr0'
+}
+
 //Prevent cross site attack
 app.use(cors({
     origin: [
@@ -82,23 +88,11 @@ app.post('/session_login', async (request, response) => {
     try {
         const authUser = await admin.auth().verifyIdToken(idToken, true);
         const userDoc = await db.collection(userCollection).doc(authUser.uid).get();
-
         const user = userDoc.data();
-        user.createDate = user.createDate?.toDate();
-        user.lastLoginDate = user.lastLoginDate?.toDate();
-        user.logoutDate = user.logoutDate?.toDate();
-        user.modifiedDate = user.modifiedDate?.toDate();
 
-        const roleDoc = await db.collection(roleCollection).doc(user.roleId).get();
-
-        user.role = {
-            id: roleDoc.id,
-            name: roleDoc.data().name
-        }
-
-        if (user.role.name === 'User' || user.role.name === 'Aministrator') { //Make sure that only created user can login
+        if (user.roleId === userRole.user || user.roleId === userRole.admin) { //Make sure that only created user can login
             admin.auth().createSessionCookie(idToken, { expiresIn }).then(sessionCookie => {
-                request.session.user = user;
+                request.session.uid = user.uid;
 
                 // Set cookie policy for session cookie.
                 const options = { maxAge: expiresIn, httpOnly: true, secure: true };
