@@ -5,7 +5,6 @@ const admin = require('firebase-admin');
 const db = admin.firestore();
 const userCollection = 'users';
 const rolesCollection = 'roles';
-const userRoleCollection = 'users_roles';
 
 router.get('/role/get', (reqeust, response) => {
     db.collection(rolesCollection).get().then(result => {
@@ -20,50 +19,67 @@ router.get('/role/get', (reqeust, response) => {
     }).catch(error => sendError(response, error));
 });
 
-router.post('/user/create', (request, response) => {
+router.post('/user/create', async (request, response) => {
     const user = request.body;
-    admin.auth().createUser({
-        email: user.emailAddress,
-        password: user.password,
-        emailVerified: false,
-        displayName: user.firstName + ' ' + user.lastName,
-        disabled: false
-    }).then(userRecord => {
+    try {
+        const ceator = request.session.uid;
+        const userRecord = await admin.auth().createUser({
+            email: user.emailAddress,
+            password: user.password,
+            emailVerified: false,
+            displayName: user.firstName + ' ' + user.lastName,
+            disabled: false
+        });
+
         const userData = {
             uid: userRecord.uid,
             firstName: user.firstName,
             lastName: user.lastName,
             screenName: user.firstName,
             emailAddress: user.emailAddress,
-            createDate: new Date()
-        };
-        db.collection(userCollection).doc(userRecord.uid).set(userData).then(() => {
-            userData.checked = false;
-            userData.role = null; //TODO get user role id
-            sendSuccess(response, userData);
-        }).catch(error => sendError(response, error));
-        db.collection(userRoleCollection).add({
             roleId: user.role,
-            userId: userRecord.uid
-        }).catch(error => sendError(response, error));
-    }).catch(error => sendError(response, error));
+            createDate: new Date(),
+            ceatedBy: ceator
+        };
+        await db.collection(userCollection).doc(userRecord.uid).set(userData);
+
+        const roleDoc = await db.collection(rolesCollection).doc(user.role).get();
+
+        userData.role = roleDoc.id;
+        userData.roleName = roleDoc.data().name;
+        userData.checked = false;
+
+        sendSuccess(response, userData);
+    } catch(error) {
+        sendError(response, error);
+    }
 });
 
 router.post('/user/update', (request, response) => {
     const user = request.body;
     db.collection(userCollection).doc(user.uid).set({
         firstName: user.firstName,
-        lastName: user.lastName
+        lastName: user.lastName,
+<<<<<<< Updated upstream
+        roleId: user.role
+=======
+        roleId: user.role.id,
+        modifiedDate: new Date()
+>>>>>>> Stashed changes
     }, {
         merge: true
     }).then(() => sendSuccess(response)).catch(error => sendError(response, error));
 });
 
-router.delete('/user/delete', (request, response) => {
-    console.log(request.body.uid);
-    db.collection(userCollection).doc(request.body.uid).delete()
-        .then(() => sendSuccess(response))
-        .catch(error => sendError(response, error));
+router.delete('/user/delete', async (request, response) => {
+    const uid = request.body.uid;
+    try {
+        await admin.auth().deleteUser(uid);
+        await db.collection(userCollection).doc(uid).delete();
+        sendSuccess(response);
+    } catch(error) {
+        sendError(response, error);
+    }
 });
 
 router.use('/user/get-all', (request, response) => {
