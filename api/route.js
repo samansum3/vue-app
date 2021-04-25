@@ -82,17 +82,22 @@ router.delete('/user/delete', async (request, response) => {
     }
 });
 
-router.use('/user/get-all', (request, response) => {
-    db.collection(userCollection).get().then(result => {
+router.use('/user/get-all', async (request, response) => {
+    try {
+        const querySnapshot = await db.collection(userCollection).get();
         const users = [];
-        result.forEach(doc => users.push(getUser(doc)));
+        for (const doc of querySnapshot.docs) {
+            users.push(await getUser(doc));
+        }
         response.status(200).json({success: true, result: users});
-    }).catch(error => sendError(response, error));
+    } catch(error) {
+        sendError(response, error);
+    }
 });
 
 router.use('/user/:userId', (request, response) => {
     db.collection(userCollection).doc(request.params.userId).get()
-        .then(doc => response.status(200).json(getUser(doc.data())))
+        .then(async doc => response.status(200).json(await getUser(doc.data())))
         .catch(console.error);
 });
 
@@ -105,14 +110,17 @@ const sendError = (response, error) => {
     response.status(500).json({success: false});
 }
 
-const getUser = (doc) => {
+const getUser = async (doc) => {
     const user = doc.data();
+    const roleDoc = await db.collection(rolesCollection).doc(user.roleId).get();
+    
     user.createDate = user.createDate?.toDate();
     user.lastLoginDate = user.lastLoginDate?.toDate();
     user.logoutDate = user.logoutDate?.toDate();
     user.modifiedDate = user.modifiedDate?.toDate();
     user.checked = false;
-    user.role = null; //TODO get user role id
+    user.role = roleDoc.id;
+    user.roleName = roleDoc.data().name;
     return user;
 }
 
