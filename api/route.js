@@ -6,6 +6,8 @@ const db = admin.firestore();
 const userCollection = 'users';
 const rolesCollection = 'roles';
 
+const adminPermission = require('../middleware/permission')(db.collection(userCollection));
+
 router.get('/role/get', (reqeust, response) => {
     db.collection(rolesCollection).get().then(result => {
         const roles = [];
@@ -19,7 +21,7 @@ router.get('/role/get', (reqeust, response) => {
     }).catch(error => sendError(response, error));
 });
 
-router.post('/user/create', async (request, response) => {
+router.post('/user/create', adminPermission, async (request, response) => {
     const user = request.body;
     try {
         const ceator = request.session.uid;
@@ -57,7 +59,7 @@ router.post('/user/create', async (request, response) => {
     }
 });
 
-router.post('/user/update', (request, response) => {
+router.post('/user/update', adminPermission, (request, response) => {
     const user = request.body;
     db.collection(userCollection).doc(user.uid).set({
         firstName: user.firstName,
@@ -69,7 +71,7 @@ router.post('/user/update', (request, response) => {
     }).then(() => sendSuccess(response)).catch(error => sendError(response, error));
 });
 
-router.delete('/user/delete', async (request, response) => {
+router.delete('/user/delete', adminPermission, async (request, response) => {
     const uid = request.body.uid;
     try {
         await admin.auth().deleteUser(uid);
