@@ -115,6 +115,8 @@ const CreateUserPopup = {
                                 if (response.data.success) {
                                     callback(isUpdate ? this.user : response.data.result);
                                     this.dialog.close();
+                                } else {
+                                    this.isLoading = false;
                                 }
                             }).catch(error => {
                                 console.error(error);

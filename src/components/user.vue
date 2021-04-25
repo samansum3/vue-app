@@ -3,11 +3,11 @@
         <div class="top-navigation">
             <div class="container-1280 d-flex">
                 <div class="ml-auto d-flex nav-control">
-                    <div class="mr-4 search-box-wrapper">
+                    <div class="search-box-wrapper">
                         <input type="text" v-model="keywords" placeholder="Search" class="form-control search-box max-width-215">
                         <b-icon-search />
                     </div>
-                    <button class="btn btn-add shadow-none" @click="createUserAccount">
+                    <button v-if="isAdmin" class="btn btn-add shadow-none ml-4" @click="createUserAccount">
                         <b-icon-plus-circle />
                         <span>Add User</span>
                     </button>
@@ -34,7 +34,7 @@
                             <td>{{ user.emailAddress }}</td>
                             <td>{{ user.role.name }}</td>
                             <td>{{ timestampToString(new Date(user.createDate).getTime()) }}</td>
-                            <td class="text-right w-55">
+                            <td v-if="isAdmin" class="text-right w-55">
                                 <three-dot-dropdown
                                     :items="dropdownItems"
                                     @action="performAction($event, user)"
@@ -57,7 +57,10 @@ import ThreeDotDropdown from './three_dot_dropdown';
 const getUsers = (callback) => {
     axios.get('/api/user/get-all/').then(response => {
         if (response.data.success) {
-            callback(vm => vm.users = response.data.result);
+            callback(vm => {
+                vm.users = response.data.result
+                vm.isAdmin = response.data.admin;
+            });
         }
     }).catch(error => {
         console.error(error);
@@ -74,6 +77,7 @@ export default {
     data() {
         return {
             columns: ['Name', 'Email', 'Role', 'Create Date'],
+            isAdmin: false,
             users: [],
             keywords: '',
             dropdownItems: [

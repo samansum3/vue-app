@@ -8,6 +8,8 @@ const rolesCollection = 'roles';
 
 const adminPermission = require('../middleware/permission')(db.collection(userCollection));
 
+const adminRoleId = 'adVNl0tA4SWhKphJd9bP'; //TODO refactor
+
 router.get('/role/get', (reqeust, response) => {
     db.collection(rolesCollection).get().then(result => {
         const roles = [];
@@ -84,12 +86,13 @@ router.delete('/user/delete', adminPermission, async (request, response) => {
 
 router.use('/user/get-all', async (request, response) => {
     try {
+        const user = (await db.collection(userCollection).doc(request.session.uid).get()).data();
         const querySnapshot = await db.collection(userCollection).get();
         const users = [];
         for (const doc of querySnapshot.docs) {
             users.push(await getUser(doc));
         }
-        response.status(200).json({success: true, result: users});
+        response.status(200).json({success: true, admin: adminRoleId === user.roleId, result: users});
     } catch(error) {
         sendError(response, error);
     }
