@@ -39,6 +39,7 @@ router.post('/user/create', (request, response) => {
         };
         db.collection(userCollection).doc(userRecord.uid).set(userData).then(() => {
             userData.checked = false;
+            userData.role = null; //TODO get user role id
             sendSuccess(response, userData);
         }).catch(error => sendError(response, error));
         db.collection(userRoleCollection).add({
@@ -46,6 +47,16 @@ router.post('/user/create', (request, response) => {
             userId: userRecord.uid
         }).catch(error => sendError(response, error));
     }).catch(error => sendError(response, error));
+});
+
+router.post('/user/update', (request, response) => {
+    const user = request.body;
+    db.collection(userCollection).doc(user.uid).set({
+        firstName: user.firstName,
+        lastName: user.lastName
+    }, {
+        merge: true
+    }).then(() => sendSuccess(response)).catch(error => sendError(response, error));
 });
 
 router.use('/user/get-all', (request, response) => {
@@ -78,6 +89,7 @@ const getUser = (doc) => {
     user.logoutDate = user.logoutDate?.toDate();
     user.modifiedDate = user.modifiedDate?.toDate();
     user.checked = false;
+    user.role = null; //TODO get user role id
     return user;
 }
 

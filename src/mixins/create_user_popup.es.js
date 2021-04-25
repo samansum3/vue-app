@@ -1,12 +1,30 @@
-import Dialog from './dialog.es';
 import { required, email, minLength } from 'vuelidate/dist/validators.min';
 import axios from 'axios/dist/axios.min';
+import { cloneDeep } from 'lodash';
+
+import Dialog from './dialog.es';
 import Dropdown from '../components/dropdown.vue';
 
 const CreateUserPopup = {
     mixins: [Dialog],
     methods: {
-        openCreateUserPopup(callback = () => {}) {
+        openCreateUserPopup(callback = () => {}, user) {
+            const isUpdate = !!user;
+            const tempUser = cloneDeep(user);
+            const userValidation = {
+                firstName: { required },
+                lastName: { required },
+                role: { required }
+            };
+
+            if (!isUpdate) {
+                Object.assign(userValidation, {
+                    emailAddress: { required, email },
+                    password: { required, minLength: minLength(6) },
+                    confirmPassword: { required }
+                });
+            }
+
             this.openDialog({
                 vue: {
                     components: {
@@ -15,7 +33,7 @@ const CreateUserPopup = {
                     data() {
                         return {
                             roles: [],
-                            user: {
+                            user: tempUser || {
                                 firstName: '',
                                 lastName: '',
                                 emailAddress: '',
@@ -25,17 +43,11 @@ const CreateUserPopup = {
                             },
                             notMatchPassword: false,
                             isLoading: false,
+                            isUpdate: isUpdate
                         }
                     },
                     validations: {
-                        user: {
-                            firstName: { required },
-                            lastName: { required },
-                            emailAddress: { required, email },
-                            password: { required, minLength: minLength(6) },
-                            confirmPassword: { required },
-                            role: { required }
-                        }
+                        user: userValidation
                     },
                     computed: {
                         invalidFirstName() {
@@ -84,9 +96,20 @@ const CreateUserPopup = {
                             }
                             
                             this.isLoading = true;
-                            axios.post('/api/user/create/', this.user).then(response => {
+                            let url = '/api/user/create/';
+                            let data = this.user;
+                            if (isUpdate) {
+                                url = '/api/user/update';
+
+                                data = {};
+                                data.uid = this.user.uid;
+                                data.firstName = this.user.firstName;
+                                data.lastName = this.user.lastName;
+                                data.role = this.user.role;
+                            }
+                            axios.post(url, data).then(response => {
                                 if (response.data.success) {
-                                    callback(response.data.result);
+                                    callback(isUpdate ? this.user : response.data.result);
                                     this.dialog.close();
                                 }
                             }).catch(error => {
@@ -97,7 +120,7 @@ const CreateUserPopup = {
                     }
                 },
                 dialog: {
-                    title: 'Create user'.toUpperCase(),
+                    title: isUpdate ? 'Update user'.toUpperCase() : 'Create user'.toUpperCase(),
                     width: '600px',
                     showClass: {
                         popup: ''
@@ -119,7 +142,7 @@ const CreateUserPopup = {
                                         <span class="error-message" v-if="invalidLastName">Please input last name</span>
                                     </div>
                                 </div>
-                                <div class="row group-control">
+                                <div v-if="!isUpdate" class="row group-control">
                                     <div class="col-2">
                                         <label>Email</label>
                                     </div>
@@ -128,7 +151,7 @@ const CreateUserPopup = {
                                         <span class="error-message" v-if="invalidEmail">Please input a valid email address</span>
                                     </div>
                                 </div>
-                                <div class="row group-control">
+                                <div v-if="!isUpdate" class="row group-control">
                                     <div class="col-2">
                                         <label>Password</label>
                                     </div>
@@ -166,7 +189,7 @@ const CreateUserPopup = {
                                     class="btn btn-primary"
                                     :disabled="isLoading"
                                     @click="createUserAccount"
-                                >Create</button>
+                                >{{ isUpdate ? 'Update' : 'Create' }}</button>
                             </div>
                         </div>
                         </template>

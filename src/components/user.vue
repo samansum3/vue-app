@@ -32,6 +32,12 @@
                             <td>{{ user.emailAddress }}</td>
                             <td>{{ user.roles }}</td>
                             <td>{{ timestampToString(new Date(user.createDate).getTime()) }}</td>
+                            <td class="text-right w-55">
+                                <three-dot-dropdown
+                                    :items="dropdownItems"
+                                    @action="performAction($event, user)"
+                                ></three-dot-dropdown>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -44,6 +50,7 @@
 import axios from 'axios/dist/axios.min';
 import DateFormater from '../mixins/date_format.es';
 import CreateUserPopup from '../mixins/create_user_popup.es';
+import ThreeDotDropdown from './three_dot_dropdown';
 
 const getUsers = (callback) => {
     axios.get('/api/user/get-all/').then(response => {
@@ -59,11 +66,18 @@ const getUsers = (callback) => {
 export default {
     name: 'User',
     mixins: [DateFormater, CreateUserPopup],
+    components: {
+        ThreeDotDropdown
+    },
     data() {
         return {
             columns: ['Name', 'Email', 'Role', 'Create Date'],
             users: [],
-            keywords: ''
+            keywords: '',
+            dropdownItems: [
+                {key: 'updateUser', value: 'Update'},
+                {key: 'deleteUser', value: 'Delete'}
+            ]
         }
     },
     computed: {
@@ -90,6 +104,21 @@ export default {
         getUsers(next, to, from);
     },
     methods: {
+        performAction(key, user) {
+            this[key](user);
+        },
+        updateUser(user) {
+            this.openCreateUserPopup(updatedUser => {
+                const index = this.users.findIndex(u => u.uid === updatedUser.uid);
+                if (index !== -1) {
+                    this.users.splice(index, 1, updatedUser);
+                }
+            }, user);
+        },
+        deleteUser(user) {
+            //TODO open popup confirm to delete
+            console.log('delete' + JSON.stringify(user));
+        },
         createUserAccount() {
             this.openCreateUserPopup(user => this.users.push(user));
         }
