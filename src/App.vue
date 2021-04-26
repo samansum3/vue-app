@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <template>
-      <navbar v-if="$route.name !== 'Login'"></navbar>
+      <navbar v-if="$route.name && ($route.name !== 'Login')"></navbar>
       <router-view></router-view>
     </template>
   </div>
