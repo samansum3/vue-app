@@ -10,7 +10,7 @@ const Dialog = {
                 title: config.dialog.title,
                 html: config.dialog.content,
                 width: config.dialog.width,
-                showCloseButton: true,
+                showCloseButton: !config.dialog.hideCloseButton,
                 allowOutsideClick: false,
                 showConfirmButton: false,
                 showCancelButton: false,

@@ -52,15 +52,18 @@ app.use(csrf({ cookie: true }));
 
 const expiresIn = 60 * 60 * 6 * 1000;
 
+app.enable('trust proxy');
 app.use(session({
     secret: process.env.VUE_APP_SESSION_SECRET,
-    cookie: {
-        maxAge: expiresIn,
-        secure: process.env.NODE_ENV === 'production'
-    },
     saveUninitialized: false,
     resave: false,
-    unset: 'destroy'
+    proxy : true,
+    unset: 'destroy',
+    cookie: {
+        maxAge: expiresIn,
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true
+    }
 }));
 
 app.all('*', (req, res, next) => {
