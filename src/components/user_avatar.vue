@@ -11,7 +11,7 @@
         >
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="user-profile-icon">
             <div v-for="(item, index) in items" :key="index">
-                <a class="dropdown-item unselectable px-3" @click="performAction(item)">{{ item.value }}</a>
+                <a class="dropdown-item unselectable px-3 text-right" @click="performAction(item)">{{ item.value }}</a>
             </div>
         </div>
     </div>
