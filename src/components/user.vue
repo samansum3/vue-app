@@ -53,6 +53,7 @@ import axios from 'axios/dist/axios.min';
 import DateFormater from '../mixins/date_format.es';
 import CreateUserPopup from '../mixins/create_user_popup.es';
 import ThreeDotDropdown from './three_dot_dropdown';
+import DeleteConfirm from '../mixins/delete_confirm';
 
 const getUsers = (callback) => {
     axios.get('/api/user/get-all/').then(response => {
@@ -70,7 +71,7 @@ const getUsers = (callback) => {
 
 export default {
     name: 'User',
-    mixins: [DateFormater, CreateUserPopup],
+    mixins: [DateFormater, CreateUserPopup, DeleteConfirm],
     components: {
         ThreeDotDropdown
     },
@@ -122,17 +123,21 @@ export default {
             }, user);
         },
         deleteUser(user) {
-            //TODO popup to confirm
-            axios.delete('/api/user/delete', {
-                data: {
-                    uid: user.uid
+            this.deleteConfirm({
+                title: 'Are you sure you want to delete this user?',
+                body: 'This user will no longer be able to login.',
+                deleteUrl: '/api/user/delete',
+                deleteOption: {
+                    data: {
+                        uid: user.uid
+                    }
                 }
-            }).then(response => {
-                if (response.data.success) {
+            }, success => {
+                if (success) {
                     const index = this.users.findIndex(u => u.uid === user.uid);
                     this.users.splice(index, 1);
                 }
-            }).catch(console.error);
+            });
         },
         createUserAccount() {
             this.openCreateUserPopup(user => this.users.push(user));
