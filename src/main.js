@@ -68,13 +68,10 @@ const router = new VueRouter({
   routes
 });
 
-const vm = new Vue({
-  render: h => h(App),
-  router
-}).$mount('#app');
+var vm = null;
 
 router.beforeEach((to, from, next) => {
-  vm.$Progress.start();
+  vm?.$Progress.start();
   axios.get('/auth_check/').then(response => {
     if (response.data.success) {
       to.name === 'Login' ? next('/') : next();
@@ -82,7 +79,7 @@ router.beforeEach((to, from, next) => {
       to.name === 'Login' ? next() : next('/login');
     }
   }).catch(error => {
-    vm.$Progress.fail();
+    vm?.$Progress.fail();
     console.error(error);
     next(false);
   });
@@ -90,5 +87,10 @@ router.beforeEach((to, from, next) => {
 });
 
 router.afterEach(() => {
-  vm.$Progress.finish();
+  vm?.$Progress.finish();
 });
+
+vm = new Vue({
+  render: h => h(App),
+  router,
+}).$mount('#app');
