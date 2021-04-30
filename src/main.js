@@ -1,12 +1,14 @@
 import Vue from 'vue/dist/vue.common.prod';
 import { Vuelidate } from 'vuelidate/dist/vuelidate.min';
 import VueRouter from 'vue-router/dist/vue-router.min';
+import VueProgressBar from 'vue-progressbar/dist/vue-progressbar';
 
 Vue.config.productionTip = false;
 
 import App from './App.vue';
 import Login from './components/login';
 import User from './components/user';
+import Spinner from './components/spinner';
 
 import firebaseWrapper from './authentication/firebase_wrapper';
 import { BootstrapVue, IconsPlugin, BootstrapVueIcons } from 'bootstrap-vue';
@@ -40,6 +42,15 @@ Vue.use(BootstrapVueIcons);
 Vue.use(Vuelidate);
 Vue.use(VueRouter);
 
+Vue.use(VueProgressBar, {
+    color: 'rgb(143, 255, 199)',
+    failedColor: 'red',
+    height: '2px'
+});
+
+//Register global components
+Vue.component('Spinner', Spinner);
+
 const Foo = { template: '<div>foo</div>' }
 const Home = { template: '<h3>Home</h3>'}
 const PageNotFound = { template: '<h3>Page not found.</h3>'}
@@ -57,7 +68,13 @@ const router = new VueRouter({
   routes
 });
 
+const vm = new Vue({
+  render: h => h(App),
+  router
+}).$mount('#app');
+
 router.beforeEach((to, from, next) => {
+  vm.$Progress.start();
   axios.get('/auth_check/').then(response => {
     if (response.data.success) {
       to.name === 'Login' ? next('/') : next();
@@ -65,13 +82,13 @@ router.beforeEach((to, from, next) => {
       to.name === 'Login' ? next() : next('/login');
     }
   }).catch(error => {
+    vm.$Progress.fail();
     console.error(error);
     next(false);
   });
   from; //treat as used variable
 });
 
-new Vue({
-  render: h => h(App),
-  router
-}).$mount('#app');
+router.afterEach(() => {
+  vm.$Progress.finish();
+});

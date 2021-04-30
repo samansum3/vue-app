@@ -57,7 +57,10 @@ const DeleteConfirm = {
                                     class="btn btn-danger"
                                     :disabled="isLoading"
                                     @click="doDelete"
-                                >Yes, delete</button>
+                                >
+                                    <spinner v-if="isLoading" css-class="top-8 left-8"></spinner>
+                                    <span>Yes, delete</span>
+                                </button>
                             </div>
                         </div>
                     `

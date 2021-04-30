@@ -47,6 +47,7 @@ const CreateUserPopup = {
                             },
                             notMatchPassword: false,
                             isLoading: false,
+                            isFetching: false,
                             isUpdate: isUpdate
                         }
                     },
@@ -78,14 +79,14 @@ const CreateUserPopup = {
                     },
                     methods: {
                         getRoles() {
-                            this.isLoading = true;
+                            this.isFetching = true;
                             axios.get('/api/role/get').then(response => {
-                                this.isLoading = false;
+                                this.isFetching = false;
                                 if (response.data.success) {
                                     this.roles = response.data.result;
                                 }
                             }).catch(error => {
-                                this.isLoading = false;
+                                this.isFetching = false;
                                 console.error(error);
                             });
                         },
@@ -194,9 +195,12 @@ const CreateUserPopup = {
                                 >Cancel</button>
                                 <button
                                     class="btn btn-primary"
-                                    :disabled="isLoading"
+                                    :disabled="isLoading || isFetching"
                                     @click="createUserAccount"
-                                >{{ isUpdate ? 'Update' : 'Create' }}</button>
+                                >
+                                    <spinner v-if="isLoading"></spinner>
+                                    <span>{{ isUpdate ? 'Update' : 'Create' }}</span>
+                                </button>
                             </div>
                         </div>
                         </template>

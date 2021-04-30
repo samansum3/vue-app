@@ -21,7 +21,10 @@
                             type="submit"
                             :class="{'disabled': disableButtonLogin}"
                             :disabled="disableButtonLogin"
-                        >Login</button>
+                        >
+                            <spinner v-if="isLoading" css-class="top-13"></spinner>
+                            <span>Login</span>
+                        </button>
                     </form>
                 </template>
                 <div v-else class="reset-password">
@@ -38,7 +41,10 @@
                             type="submit"
                             :class="{'disabled': isInvalidEmail}"
                             :disabled="isInvalidEmail"
-                        >Send</button>
+                        >
+                            <spinner v-if="isLoading" css-class="top-13"></spinner>
+                            <span>Send</span>
+                        </button>
                     </form>
                 </div>
             </div>
@@ -125,9 +131,14 @@ export default {
             if (this.isInvalidEmail) {
                 return;
             }
+            this.isLoading = true;
             firebase.auth().sendPasswordResetEmail(this.user.email).then(() => {
                 this.isSent = true;
-            }).catch(console.error);
+                this.isLoading = false;
+            }).catch(error => {
+                this.isLoading = false;
+                console.error(error);
+            });
         },
         switchForm() {
             this.isLogin = !this.isLogin;
