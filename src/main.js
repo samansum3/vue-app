@@ -6,8 +6,8 @@ import VueProgressBar from 'vue-progressbar/dist/vue-progressbar';
 Vue.config.productionTip = false;
 
 import App from './App.vue';
-const Login = () => import('./components/login');
-const User = () => import('./components/user');
+const Login = () => import(/* webpackChunkName: 'login' */ './components/login');
+const User = () => import(/* webpackChunkName: 'user' */ './components/user');
 import Spinner from './components/spinner';
 
 import firebaseWrapper from './authentication/firebase_wrapper';
