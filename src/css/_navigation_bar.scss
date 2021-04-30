@@ -28,8 +28,19 @@
             }
         }
         .nav-item.active {
+            position: relative;
             .nav-link {
                 color: white;
+            }
+
+            &::after {
+                content: "";
+                border: .35rem solid transparent;
+                border-bottom-color: #fff;
+                position: absolute;
+                left: 50%;
+                margin-left: -.35rem;
+                top: 3.05rem;
             }
         }
     }
