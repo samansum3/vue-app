@@ -7,6 +7,7 @@ Vue.config.productionTip = false;
 import App from './App.vue';
 import Login from './components/login';
 import User from './components/user';
+import Spinner from './components/spinner';
 
 import firebaseWrapper from './authentication/firebase_wrapper';
 import { BootstrapVue, IconsPlugin, BootstrapVueIcons } from 'bootstrap-vue';
@@ -39,6 +40,9 @@ Vue.use(IconsPlugin);
 Vue.use(BootstrapVueIcons);
 Vue.use(Vuelidate);
 Vue.use(VueRouter);
+
+//Register global components
+Vue.component('Spinner', Spinner);
 
 const Foo = { template: '<div>foo</div>' }
 const Home = { template: '<h3>Home</h3>'}
