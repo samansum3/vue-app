@@ -6,12 +6,7 @@
         padding: 0;
 
         .swal2-header {
-            background-image: linear-gradient(to right, #489bee, #5fc2cf);
-            background-image: -moz-linear-gradient(to right, #489bee, #5fc2cf);
-            background-image: -webkit-gradient(to right, #489bee, #5fc2cf);
-            background-image: -webkit-linear-gradient(to right, #489bee, #5fc2cf);
-            background-image: -o-linear-gradient(to right, #489bee, #5fc2cf);
-            background-image: -ms-linear-gradient(to right, #489bee, #5fc2cf);
+            @include navbar-background;
             
             border-top-left-radius: 0.25rem;
             border-top-right-radius: 0.25rem;

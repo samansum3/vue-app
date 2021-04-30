@@ -55,6 +55,8 @@ import CreateUserPopup from '../mixins/create_user_popup.es';
 import ThreeDotDropdown from './three_dot_dropdown';
 import DeleteConfirm from '../mixins/delete_confirm';
 
+import '../css/components/user.scss';
+
 const getUsers = (callback) => {
     axios.get('/api/user/get-all/').then(response => {
         if (response.data.success) {

@@ -60,6 +60,8 @@ import firebase from 'firebase/app';
 import { required, email } from 'vuelidate/dist/validators.min';
 import axios from 'axios/dist/axios.min';
 
+import '../css/components/login.scss';
+
 export default {
     name: 'Login',
     data() {

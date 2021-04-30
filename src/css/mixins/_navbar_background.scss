@@ -1,0 +1,8 @@
+@mixin navbar-background {
+    background-image: linear-gradient(to right, #489bee, #5fc2cf);
+    background-image: -moz-linear-gradient(to right, #489bee, #5fc2cf);
+    background-image: -webkit-gradient(to right, #489bee, #5fc2cf);
+    background-image: -webkit-linear-gradient(to right, #489bee, #5fc2cf);
+    background-image: -o-linear-gradient(to right, #489bee, #5fc2cf);
+    background-image: -ms-linear-gradient(to right, #489bee, #5fc2cf);
+}

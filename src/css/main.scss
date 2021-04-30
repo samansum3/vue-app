@@ -1,15 +1,13 @@
+@import './mixins/navbar_background';
+@import './mixins/disabled';
 @import './util';
-@import './longin';
 @import './navigation_bar';
-@import './user';
 @import './sweetalter2';
 @import './button';
 @import './dropdown';
-@import './mixins/disabled';
 @import './text';
 @import './size';
 @import './position';
-@import './delete_confirm_popup';
 
 html > body {
     background-color: #f2f2f2;

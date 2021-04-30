@@ -1,6 +1,8 @@
 import Dialog from './dialog.es';
 import axios from 'axios/dist/axios.min';
 
+import '../css/components/delete_confirm_popup.scss';
+
 const DeleteConfirm = {
     mixins: [ Dialog ],
     methods: {
