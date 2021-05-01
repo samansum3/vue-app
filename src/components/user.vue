@@ -1,5 +1,5 @@
 <template>
-    <div class="user-wrapper mb-5">
+    <div class="manager-page-wrapper mb-5">
         <div class="top-navigation">
             <div class="container-1280 d-flex">
                 <div class="ml-auto d-flex nav-control">
@@ -54,8 +54,6 @@ import DateFormater from '../mixins/date_format.es';
 import CreateUserPopup from '../mixins/create_user_popup.es';
 import ThreeDotDropdown from './three_dot_dropdown';
 import DeleteConfirm from '../mixins/delete_confirm';
-
-import '../css/components/user.scss';
 
 const getUsers = (callback) => {
     axios.get('/api/user/get-all/').then(response => {
