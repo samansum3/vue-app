@@ -30,11 +30,11 @@ export default {
         return {
             navbarItems: [
                 {
-                    value: 'Invoice',
-                    key: 'invoice',
+                    value: 'Post',
+                    key: 'post',
                     route: {
-                        path: '/foo',
-                        name: 'Foo'
+                        path: '/post',
+                        name: 'Post'
                     }
                 },
                 {
