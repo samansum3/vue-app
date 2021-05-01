@@ -90,8 +90,7 @@ app.post('/session_login', async (request, response) => {
 
     try {
         const authUser = await admin.auth().verifyIdToken(idToken, true);
-        const userDoc = await db.collection(userCollection).doc(authUser.uid).get();
-        const user = userDoc.data();
+        const user = (await db.collection(userCollection).doc(authUser.uid).get()).data();
 
         if (user.roleId === userRole.user || user.roleId === userRole.admin) { //Make sure that only created user can login
             admin.auth().createSessionCookie(idToken, { expiresIn }).then(sessionCookie => {
@@ -117,6 +116,7 @@ app.post('/session_logout', (request, response) => {
     request.session.destroy(error => {
         if (error) {
             console.log(error);
+            request.session = null;
         }
     });
     response.status(200).json({success: true});
