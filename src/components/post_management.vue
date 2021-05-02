@@ -15,23 +15,17 @@ import axios from 'axios/dist/axios.min';
 import DateFormater from '../mixins/date_format.es';
 import ManagerPage from './manager_page';
 import DeleteConfirm from '../mixins/delete_confirm';
+import CratePost from '../mixins/create_post';
 
 const getPosts = (next) => {
     axios.get('/api/post/get-all/').then(response => {
         next(vm => {
             if (response.data.success) {
                 vm.posts = response.data.result.map(post => {
-                    post.threeDotItems = [];
-                    vm.threeDotItems.forEach(item => {
-                        if (!item.permission || post[item.permission]) {
-                            post.threeDotItems.push(item);
-                        }
-                    });
-                    post.checked = false;
+                    vm.qulaifyPost(post);
                     return post;
                 });
             }
-
         });
     }).catch(error => {
         console.error(error);
@@ -41,7 +35,7 @@ const getPosts = (next) => {
 
 export default {
     name: 'Manage Post',
-    mixins: [ DateFormater, DeleteConfirm ],
+    mixins: [ DateFormater, DeleteConfirm, CratePost],
     components: {
         ManagerPage
     },
@@ -88,11 +82,14 @@ export default {
         getPosts(next, to, from);
     },
     methods: {
-        addNewPost() {
-            console.log('add new post');
-        },
         triggerThreeDot(key, post) {
             this[key](post);
+        },
+        addNewPost() {
+            this.openCreatePostPopup(post => {
+                this.qulaifyPost(post);
+                this.posts.push(post);
+            });
         },
         viewPost(post) {
             //TODO redirect to view post screen
@@ -120,6 +117,15 @@ export default {
                     }
                 }
             });
+        },
+        qulaifyPost(post) {
+            post.threeDotItems = [];
+            this.threeDotItems.forEach(item => {
+                if (!item.permission || post[item.permission]) {
+                    post.threeDotItems.push(item);
+                }
+            });
+            post.checked = false;
         }
     }
 }
