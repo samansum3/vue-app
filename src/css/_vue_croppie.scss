@@ -1,0 +1,20 @@
+.croppie-container {
+    .cr-resizer {
+        .cr-resizer-vertical, .cr-resizer-horisontal {
+            display: none;
+        }
+    }
+
+    .croppie-image-icon {
+        cursor: pointer;
+        margin-left: auto;
+        color: #499cee;
+    }
+}
+.vue-croppie-wrapper {
+    padding-top: 1rem;
+
+    .popup-footer {
+        padding-bottom: 1rem !important;
+    }
+}

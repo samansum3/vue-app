@@ -1,6 +1,8 @@
+@import './variable/color';
 @import './mixins/navbar_background';
 @import './mixins/disabled';
 @import './util';
+@import './color';
 @import './navigation_bar';
 @import './sweetalter2';
 @import './button';
@@ -8,6 +10,8 @@
 @import './text';
 @import './size';
 @import './position';
+@import './manager_page';
+@import './vue_croppie';
 
 html > body {
     background-color: #f2f2f2;

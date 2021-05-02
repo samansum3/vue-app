@@ -8,6 +8,7 @@ Vue.config.productionTip = false;
 import App from './App.vue';
 const Login = () => import(/* webpackChunkName: 'login' */ './components/login');
 const User = () => import(/* webpackChunkName: 'user' */ './components/user');
+const PostManageMent = () => import(/* webpackChunkName: 'post' */ './components/post_management');
 import Spinner from './components/spinner';
 
 import firebaseWrapper from './authentication/firebase_wrapper';
@@ -51,13 +52,12 @@ Vue.use(VueProgressBar, {
 //Register global components
 Vue.component('Spinner', Spinner);
 
-const Foo = { template: '<div>foo</div>' }
 const Home = { template: '<h3>Home</h3>'}
 const PageNotFound = { template: '<h3>Page not found.</h3>'}
 
 const routes = [
   { name: 'Home', path: '/', component: Home },
-  { name: 'Foo', path: '/foo', component: Foo },
+  { name: 'Post', path: '/post', component: PostManageMent },
   { name: 'User', path: '/user', component: User },
   { name: 'Login', path: '/login', component: Login },
   { name: 'PageNotFound', path: '/*', component: PageNotFound }
@@ -68,13 +68,10 @@ const router = new VueRouter({
   routes
 });
 
-const vm = new Vue({
-  render: h => h(App),
-  router
-}).$mount('#app');
+var vm = null;
 
 router.beforeEach((to, from, next) => {
-  vm.$Progress.start();
+  vm?.$Progress.start();
   axios.get('/auth_check/').then(response => {
     if (response.data.success) {
       to.name === 'Login' ? next('/') : next();
@@ -82,7 +79,7 @@ router.beforeEach((to, from, next) => {
       to.name === 'Login' ? next() : next('/login');
     }
   }).catch(error => {
-    vm.$Progress.fail();
+    vm?.$Progress.fail();
     console.error(error);
     next(false);
   });
@@ -90,5 +87,10 @@ router.beforeEach((to, from, next) => {
 });
 
 router.afterEach(() => {
-  vm.$Progress.finish();
+  vm?.$Progress.finish();
 });
+
+vm = new Vue({
+  render: h => h(App),
+  router,
+}).$mount('#app');

@@ -1,68 +1,30 @@
 <template>
-    <div class="user-wrapper mb-5">
-        <div class="top-navigation">
-            <div class="container-1280 d-flex">
-                <div class="ml-auto d-flex nav-control">
-                    <div class="search-box-wrapper">
-                        <input type="text" v-model="keywords" placeholder="Search" class="form-control search-box max-width-215">
-                        <b-icon-search />
-                    </div>
-                    <button v-if="isAdmin" class="btn btn-add shadow-none ml-4" @click="createUserAccount">
-                        <b-icon-plus-circle />
-                        <span>Add User</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="card-container container-1280">
-            <div class="candy-card">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="table-checkbox">
-                                <input type="checkbox" v-model="checkAll">
-                            </th>
-                            <th v-for="(column, index) in columns" :key="index" scope="col">{{ column }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(user, index) in filteredUser" :key="'user-' + index">
-                            <td scope="col" class="table-checkbox">
-                                <input type="checkbox" v-model="user.checked">
-                            </td>
-                            <td>{{ user.firstName + ' ' + user.lastName }}</td>
-                            <td>{{ user.emailAddress }}</td>
-                            <td>{{ user.role.name }}</td>
-                            <td>{{ timestampToString(new Date(user.createDate).getTime()) }}</td>
-                            <td v-if="isAdmin" class="text-right w-55">
-                                <three-dot-dropdown
-                                    :items="dropdownItems"
-                                    @action="performAction($event, user)"
-                                ></three-dot-dropdown>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+    <manager-page
+        page-title="Manage User"
+        :items="users"
+        :columns="columns"
+        :search-by="searchBy"
+        addButtonText="Add user"
+        @add-new="createUserAccount"
+        @trigger-three-dot="performAction"
+    ></manager-page>
 </template>
 
 <script>
 import axios from 'axios/dist/axios.min';
 import DateFormater from '../mixins/date_format.es';
 import CreateUserPopup from '../mixins/create_user_popup.es';
-import ThreeDotDropdown from './three_dot_dropdown';
 import DeleteConfirm from '../mixins/delete_confirm';
-
-import '../css/components/user.scss';
+import ManagerPage from './manager_page';
 
 const getUsers = (callback) => {
     axios.get('/api/user/get-all/').then(response => {
         if (response.data.success) {
             callback(vm => {
-                vm.users = response.data.result
-                vm.isAdmin = response.data.admin;
+                vm.users = response.data.result.map(user => {
+                    user.threeDotItems = vm.dropdownItems;
+                    return user;
+                });
             });
         }
     }).catch(error => {
@@ -75,38 +37,35 @@ export default {
     name: 'User',
     mixins: [DateFormater, CreateUserPopup, DeleteConfirm],
     components: {
-        ThreeDotDropdown
+        ManagerPage
     },
     data() {
         return {
-            columns: ['Name', 'Email', 'Role', 'Create Date'],
-            isAdmin: false,
             users: [],
             keywords: '',
+            searchBy: ['firstName', 'lastName', 'emailAddress'],
+            columns: [
+                {
+                    name: 'Name',
+                    getData: item => item.firstName + ' ' + item.lastName
+                },
+                {
+                    name: 'Email',
+                    getData: item => item.emailAddress
+                },
+                {
+                    name: 'Role',
+                    getData: item => item.role.name
+                },
+                {
+                    name: 'Create Date',
+                    getData: item => this.timestampToString(new Date(item.createDate).getTime())
+                }
+            ],
             dropdownItems: [
                 {key: 'updateUser', value: 'Update'},
                 {key: 'deleteUser', value: 'Delete'}
             ]
-        }
-    },
-    computed: {
-        checkAll: {
-            set(checked) {
-                this.filteredUser.forEach(user => user.checked = checked);
-            },
-            get() {
-                const checkedUser = this.filteredUser.filter(user => user.checked).length;
-                return this.filteredUser.length > 0 && this.filteredUser.length === checkedUser;
-            }
-        },
-        filteredUser() {
-            return this.users.filter(user => {
-                if (!this.keywords) return true;
-                let search = this.keywords.toLowerCase();
-                return (user.firstName || '').toLowerCase().includes(search) ||
-                    (user.lastName || '').includes(search) ||
-                    (user.emailAddress || '').toLowerCase().includes(search);
-            });
         }
     },
     beforeRouteEnter(to, from, next) {
@@ -142,7 +101,10 @@ export default {
             });
         },
         createUserAccount() {
-            this.openCreateUserPopup(user => this.users.push(user));
+            this.openCreateUserPopup(user => {
+                user.threeDotItems = this.dropdownItems;
+                this.users.push(user);
+            });
         }
     }
 }
