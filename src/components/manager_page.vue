@@ -1,8 +1,11 @@
 <template>
     <div class="manager-page-wrapper mb-5">
         <div class="top-navigation">
-            <div class="container-1280 d-flex">
-                <div class="ml-auto d-flex nav-control">
+            <div class="container-1280 d-flex h-100">
+                <div v-if="pageTitle" class="d-flex align-items-center">
+                    <span class="font-weight-bold color-black">{{ pageTitle }}</span>
+                </div>
+                <div class="ml-auto d-flex align-items-center nav-control">
                     <div v-if="searchBy.length" class="search-box-wrapper">
                         <input type="text" v-model="keywords" :placeholder="searchPlaceholder" class="form-control search-box max-width-215">
                         <b-icon-search />
@@ -54,6 +57,7 @@ export default {
         ThreeDotDropdown
     },
     props: {
+        pageTitle: {type: String},
         addButtonText: {type: String},
         searchPlaceholder: {type: String, default: 'Search'},
         searchBy: {type: Array, default: () => ([])},

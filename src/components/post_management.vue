@@ -1,5 +1,6 @@
 <template>
     <manager-page
+        page-title="Manage Post"
         :items="posts"
         :columns="columns"
         :search-by="searchBy"
