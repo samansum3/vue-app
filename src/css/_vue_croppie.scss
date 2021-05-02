@@ -1,0 +1,14 @@
+.croppie-container {
+    .cr-resizer {
+        .cr-resizer-vertical, .cr-resizer-horisontal {
+            display: none;
+        }
+    }
+}
+.vue-croppie-wrapper {
+    padding-top: 1rem;
+
+    .popup-footer {
+        padding-bottom: 1rem !important;
+    }
+}
