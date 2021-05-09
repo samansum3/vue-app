@@ -3,6 +3,7 @@ import { required } from 'vuelidate/dist/validators.min';
 import Dialog from './dialog.es';
 import Vue from 'vue/dist/vue.common.prod';
 import VueCroppie from 'vue-croppie/dist/vue-croppie.min';
+import LoadingIndicator from '../components/loading_indicator';
 
 import 'croppie/croppie.css';
 
@@ -21,6 +22,9 @@ const CratePost = {
 
             this.openDialog({
                 vue: {
+                    components: {
+                        LoadingIndicator
+                    },
                     data() {
                         return {
                             post: {
@@ -30,6 +34,7 @@ const CratePost = {
                                 featureImage: null
                             },
                             isLoading: false,
+                            isFetchingPost: isUpdate,
                             isUpdate: isUpdate,
                             selectedFile: null,
                             cropieOption: {
@@ -46,17 +51,25 @@ const CratePost = {
                         }
                     },
                     created() {
-                        if (!post?.uid) return;
+                        if (!post?.uid) {
+                            this.isFetchingPost = false;
+                            return;
+                        }
 
+                        this.isFetchingPost = true;
                         axios.get('/api/post/get-minimal', {
                             params: {
                                 uid: post.uid
                             }
                         }).then(response => {
+                            this.isFetchingPost = false;
                             if (response.data.success) {
                                 this.post = response.data.result;
                                 this.changeImage(this.post.imageUrl);
                             }
+                        }).catch(error => {
+                            this.isFetchingPost = false;
+                            console.error(error);
                         })
                     },
                     mounted() {
@@ -124,8 +137,8 @@ const CratePost = {
                 dialog: {
                     title: (isUpdate ? 'Update post' : 'New post').toUpperCase(),
                     width: '800px',
-                    showClass: {
-                        popup: ''
+                    customClass: {
+                        content: 'position-relative'
                     },
                     content: `
                         <template>
@@ -171,6 +184,7 @@ const CratePost = {
                                         <span>{{ isUpdate ? 'Update' : 'Create' }}</span>
                                     </button>
                                 </div>
+                                <loading-indicator :is-loading="isFetchingPost" />
                             </div>
 
                             <input type="file" id="featureImageInput" class="d-none" ref="featureImage" @change="selectImage"></input>

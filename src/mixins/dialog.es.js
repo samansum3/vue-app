@@ -14,7 +14,7 @@ const Dialog = {
                 allowOutsideClick: false,
                 showConfirmButton: false,
                 showCancelButton: false,
-                showClass: config.dialog.showClass,
+                showClass: config.dialog.showClass || {popup: ''},
                 hideClass: config.dialog.hideClass,
                 customClass: config.dialog.customClass
             });
