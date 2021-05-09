@@ -86,10 +86,7 @@ export default {
             this[key](post);
         },
         addNewPost() {
-            this.openCreatePostPopup(post => {
-                this.qulaifyPost(post);
-                this.posts.push(post);
-            });
+            this.openCreatePostPopup(post => this.posts.push(this.qulaifyPost(post)));
         },
         viewPost(post) {
             //TODO redirect to view post screen
@@ -126,6 +123,7 @@ export default {
                 }
             });
             post.checked = false;
+            return post;
         }
     }
 }

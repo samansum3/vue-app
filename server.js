@@ -82,8 +82,12 @@ app.use(function (err, req, res, next) {
     }
 });
 
+//TODO Combine these routers
 const router = require('./api/route');
+const postRouter = require('./api/post');
+
 app.use('/api', router);
+app.use('/api', postRouter);
 
 app.post('/session_login', async (request, response) => {
     const idToken = request.body.idToken;

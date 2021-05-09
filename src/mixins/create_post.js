@@ -61,7 +61,13 @@ const CratePost = {
                             try {
                                 this.isLoading = true;
                                 this.post.featureImage = await this.cropImage();
-                                axios.post('/api/post/create', this.post).then(response => {
+                                const formData = new FormData();
+                                formData.append('title', this.post.title);
+                                formData.append('description', this.post.description);
+                                formData.append('status', this.post.status);
+                                formData.append('featureImage', this.post.featureImage);
+
+                                axios.post('/api/post/create', formData).then(response => {
                                     this.isLoading = false;
                                     if (response.data.success) {
                                         callback(response.data.result);

@@ -6,6 +6,8 @@ const db = admin.firestore();
 const userCollection = 'users';
 const rolesCollection = 'roles';
 
+const { sendSuccess, sendError } = require('./util');
+
 const adminPermission = require('../middleware/permission')(db.collection(userCollection));
 
 const adminRoleId = 'adVNl0tA4SWhKphJd9bP'; //TODO refactor
@@ -103,15 +105,6 @@ router.use('/user/:userId', (request, response) => {
         .then(async doc => response.status(200).json(await getUser(doc.data())))
         .catch(console.error);
 });
-
-const sendSuccess = (response, data) => {
-    response.status(200).json({success: true, result: data});
-}
-
-const sendError = (response, error) => {
-    console.error(error);
-    response.status(500).json({success: false});
-}
 
 const getUser = async (doc) => {
     const user = doc.data();

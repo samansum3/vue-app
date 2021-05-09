@@ -31,7 +31,7 @@ import './css/main.scss';
 import VueCookies from 'vue-cookies';
 Vue.use(VueCookies);
 
-VueCookies.config('5d');
+VueCookies.config('6h');
 
 import axios from 'axios/dist/axios.min';
 axios.defaults.withCredentials = true;
