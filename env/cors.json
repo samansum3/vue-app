@@ -1,0 +1,7 @@
+[
+  {
+    "origin": ["http://localhost:8080", "https://invoice-vue-app.herokuapp.com"],
+    "method": ["GET"],
+    "maxAgeSeconds": 3600
+  }
+]
