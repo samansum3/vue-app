@@ -67,6 +67,16 @@ router.get('/post/get-all', async (req, res) => {
     }
 });
 
+router.delete('/post/delete', async (req, res) => {
+    try {
+        bucket.file(postFolderPath + req.body.uid).delete();
+        db.collection(postCollection).doc(req.body.uid).delete();
+        sendSuccess(res);
+    } catch(error) {
+        sendError(res, error);
+    }
+});
+
 const getPost = async (req, doc) => {
     const post = doc.data();
     const updatable = hasUpdatePermission(req, post.userId);
