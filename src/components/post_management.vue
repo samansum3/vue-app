@@ -93,8 +93,17 @@ export default {
             console.log('view post ' + JSON.stringify(post));
         },
         updatePost(post) {
-            //TODO show update post screen/popup
-            console.log('update post ' + JSON.stringify(post));
+            this.openCreatePostPopup((updatedPost) => {
+                updatedPost.updatable = post.updatable;
+                updatedPost.deletable = post.deletable;
+                updatedPost.checked = post.checked;
+                updatedPost.createDate = post.createDate;
+                updatedPost.author = post.author;
+                const index = this.posts.findIndex(p => p.uid == updatedPost.uid);
+                if (index > -1) {
+                    this.posts.splice(index, 1, this.qulaifyPost(updatedPost));
+                }
+            }, post);
         },
         deletePost(post) {
             this.deleteConfirm({
@@ -122,7 +131,7 @@ export default {
                     post.threeDotItems.push(item);
                 }
             });
-            post.checked = false;
+            post.checked = post.checked || false;
             return post;
         }
     }

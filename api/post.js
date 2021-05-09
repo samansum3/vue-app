@@ -29,26 +29,43 @@ router.post('/post/create', upload.single('featureImage'), async (req, res) => {
     };
     try {
         db.collection(postCollection).add(postData).then(response => {
-            //Upload feature image into firebase storage
-            const blob = bucket.file(postFolderPath + response.id);
-            const blobWriter = blob.createWriteStream({
-                metadata: {
-                    contentType: req.file.mimetype
-                }
-            });
-
-            blobWriter.on('error', (err) => sendError(res, err));
-            
-            blobWriter.on('finish', async () => {
+            const onSuccess = async () => {
+                postData.uid = response.id;
                 postData.author = await getAuthorName(postData.userId);
                 postData.updatable = true;
                 postData.deletable = true;
                 postData.description = null;
                 sendSuccess(res, postData);
-            });
-
-            blobWriter.end(req.file.buffer);
+            }
+            if (!req.file) {
+                onSuccess();
+            } else {
+                uploadFile(req, postFolderPath + response.id, onSuccess);
+            }
         });
+    } catch(error) {
+        sendError(res, error);
+    }
+});
+
+router.post('/post/update', upload.single('featureImage'), async (req, res) => {
+    const post = req.body;
+    try {
+        db.collection(postCollection).doc(post.uid).set({
+            title: post.title,
+            description: post.description,
+            modifiedDate: new Date()
+        }, {
+            merge: true
+        });
+        if (req.file) {
+            try {
+                await bucket.file(postFolderPath + post.uid).delete();
+            } catch(error) {
+                console.error(error);
+            }
+            uploadFile(req, postFolderPath + post.uid, () => sendSuccess(res));
+        }
     } catch(error) {
         sendError(res, error);
     }
@@ -67,9 +84,29 @@ router.get('/post/get-all', async (req, res) => {
     }
 });
 
+router.get('/post/get-minimal', async (req, res) => {
+    try {
+        const uid = req.query.uid;
+        const post = (await db.collection(postCollection).doc(uid).get()).data();
+        sendSuccess(res, {
+            uid: uid,
+            title: post.title,
+            description: post.description,
+            status: post.status,
+            imageUrl: await getImageUrl(postFolderPath + uid)
+        });
+    } catch(error) {
+        sendError(res, error);
+    }
+});
+
 router.delete('/post/delete', async (req, res) => {
     try {
-        bucket.file(postFolderPath + req.body.uid).delete();
+        try {
+            bucket.file(postFolderPath + req.body.uid).delete();
+        } catch(error) {
+            console.error(error);
+        }
         db.collection(postCollection).doc(req.body.uid).delete();
         sendSuccess(res);
     } catch(error) {
@@ -77,9 +114,25 @@ router.delete('/post/delete', async (req, res) => {
     }
 });
 
+const uploadFile = (req, filePath, onSuccess= () => {}) => {
+    //Upload feature image into firebase storage
+    const blob = bucket.file(filePath);
+    const blobWriter = blob.createWriteStream({
+        metadata: {
+            contentType: req.file.mimetype
+        }
+    });
+
+    blobWriter.on('error', (err) => sendError(res, err));
+    
+    blobWriter.on('finish', onSuccess);
+
+    blobWriter.end(req.file.buffer);
+}
+
 const getPost = async (req, doc) => {
     const post = doc.data();
-    const updatable = hasUpdatePermission(req, post.userId);
+    const updatable = await hasUpdatePermission(req, post.userId);
     return {
         uid: doc.id,
         title: post.title,

@@ -33,8 +33,8 @@ const CratePost = {
                             isUpdate: isUpdate,
                             selectedFile: null,
                             cropieOption: {
-                                boundary: { width: 738, height: 369 },
-                                viewport: { width: 688, height: 319, type:'square' }
+                                boundary: { width: 738, height: 394 },
+                                viewport: { width: 688, height: 344, type:'square' }
                             }
                         }
                     },
@@ -44,6 +44,20 @@ const CratePost = {
                             description: { required },
                             status: { required }
                         }
+                    },
+                    created() {
+                        if (!post?.uid) return;
+
+                        axios.get('/api/post/get-minimal', {
+                            params: {
+                                uid: post.uid
+                            }
+                        }).then(response => {
+                            if (response.data.success) {
+                                this.post = response.data.result;
+                                this.changeImage(this.post.imageUrl);
+                            }
+                        })
                     },
                     mounted() {
                         this.$nextTick(() => {
@@ -60,17 +74,22 @@ const CratePost = {
 
                             try {
                                 this.isLoading = true;
-                                this.post.featureImage = await this.cropImage();
+                                if (this.selectedFile) {
+                                    this.post.featureImage = await this.cropImage();
+                                }
                                 const formData = new FormData();
                                 formData.append('title', this.post.title);
                                 formData.append('description', this.post.description);
                                 formData.append('status', this.post.status);
                                 formData.append('featureImage', this.post.featureImage);
+                                if (isUpdate) {
+                                    formData.append('uid', this.post.uid);
+                                }
 
-                                axios.post('/api/post/create', formData).then(response => {
+                                axios.post(isUpdate ? '/api/post/update' : '/api/post/create', formData).then(response => {
                                     this.isLoading = false;
                                     if (response.data.success) {
-                                        callback(response.data.result);
+                                        callback(isUpdate ? this.post : response.data.result);
                                         this.dialog.close();
                                     }
                                 }).catch(error => {
@@ -84,9 +103,7 @@ const CratePost = {
                         },
                         selectImage() {
                             this.selectedFile = this.$refs.featureImage.files[0];
-                            this.$refs.featureImageCroppieRef.bind({
-                                url: URL.createObjectURL(this.selectedFile)
-                            });
+                            this.changeImage(URL.createObjectURL(this.selectedFile));
                         },
                         cropImage() {
                             return new Promise(resolve => {
@@ -96,11 +113,16 @@ const CratePost = {
                                     format: 'jpeg'
                                 }, resolve);
                             });
+                        },
+                        changeImage(url) {
+                            this.$refs.featureImageCroppieRef.bind({
+                                url: url
+                            });
                         }
                     }
                 },
                 dialog: {
-                    title: 'New post'.toUpperCase(),
+                    title: (isUpdate ? 'Update post' : 'New post').toUpperCase(),
                     width: '800px',
                     showClass: {
                         popup: ''
