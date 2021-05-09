@@ -38,8 +38,8 @@ const CratePost = {
                             isUpdate: isUpdate,
                             selectedFile: null,
                             cropieOption: {
-                                boundary: { width: 738, height: 394 },
-                                viewport: { width: 688, height: 344, type:'square' }
+                                boundary: { width: 702, height: 343 },
+                                viewport: { width: 652, height: 293, type:'square' }
                             }
                         }
                     },
@@ -122,7 +122,7 @@ const CratePost = {
                             return new Promise(resolve => {
                                 this.$refs.featureImageCroppieRef.result({
                                     type: 'blob',
-                                    size: { width: 1000, height: 500 },
+                                    size: { width: 1000, height: 450 },
                                     format: 'jpeg'
                                 }, resolve);
                             });
@@ -136,13 +136,13 @@ const CratePost = {
                 },
                 dialog: {
                     title: (isUpdate ? 'Update post' : 'New post').toUpperCase(),
-                    width: '800px',
+                    width: '750px',
                     customClass: {
                         content: 'position-relative'
                     },
                     content: `
                         <template>
-                            <div class="create-post-wrapper container pt-4">
+                            <div class="create-post-wrapper container px-2 pt-4">
                                 <vue-croppie
                                     ref="featureImageCroppieRef"
                                     :boundary="cropieOption.boundary"
@@ -169,7 +169,7 @@ const CratePost = {
                                     </div>
                                 </div>
 
-                                <div class="popup-footer">
+                                <div class="popup-footer pb-4">
                                     <button
                                         class="btn btn-outline-primary mr-3"
                                         :disabled="isLoading"
