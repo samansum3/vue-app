@@ -6,7 +6,10 @@ const multer = require('multer');
 const db = admin.firestore();
 const bucket = admin.storage().bucket();
 
+const adminRoleId = 'adVNl0tA4SWhKphJd9bP';
+
 const postCollection = 'posts';
+const userCollection = 'users';
 const postFolderPath = 'posts/';
 
 const upload = multer({
@@ -50,6 +53,50 @@ router.post('/post/create', upload.single('featureImage'), async (req, res) => {
         sendError(res, error);
     }
 });
+
+router.get('/post/get-all', async (req, res) => {
+    try {
+        const querySnapshot = await db.collection(postCollection).get();
+        const posts = [];
+        for (const doc of querySnapshot.docs) {
+            posts.push(await getPost(req, doc));
+        }
+        sendSuccess(res, posts);
+    } catch(error) {
+        sendError(res, error);
+    }
+});
+
+const getPost = async (req, doc) => {
+    const post = doc.data();
+    const updatable = hasUpdatePermission(req, post.userId);
+    return {
+        uid: doc.id,
+        title: post.title,
+        description: post.description,
+        createDate: post.createDate?.toDate(),
+        author: await getAuthorName(post.userId),
+        updatable: updatable,
+        deletable: updatable
+    }
+}
+
+const hasUpdatePermission = async (req, authorId) => {
+    return authorId == req.session.uid || await isAdmin(req);
+}
+
+const isAdmin = async (req) => {
+    return adminRoleId == (await getUser(req.session.uid)).roleId;
+}
+
+const getAuthorName = async (uid) => {
+    const user = await getUser(uid);
+    return user.firstName + ' ' + user.lastName;
+}
+
+const getUser = async (uid) => {
+    return (await db.collection(userCollection).doc(uid).get()).data();
+}
 
 const getImageUrl = async (filePath) => {
     try {
