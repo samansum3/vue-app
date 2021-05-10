@@ -7,9 +7,11 @@ Vue.config.productionTip = false;
 
 import App from './App.vue';
 const Login = () => import(/* webpackChunkName: 'login' */ './components/login');
+const Home = () => import(/* webpackChunkName: 'home' */ './components/home');
 const User = () => import(/* webpackChunkName: 'user' */ './components/user');
 const PostManageMent = () => import(/* webpackChunkName: 'post' */ './components/post_management');
 import Spinner from './components/spinner';
+import DateFormater from './mixins/date_format.es';
 
 import firebaseWrapper from './authentication/firebase_wrapper';
 import { BootstrapVue, IconsPlugin, BootstrapVueIcons } from 'bootstrap-vue';
@@ -49,10 +51,10 @@ Vue.use(VueProgressBar, {
     height: '2px'
 });
 
-//Register global components
+//Register global components or mixins
 Vue.component('Spinner', Spinner);
+Vue.mixin(DateFormater);
 
-const Home = { template: '<h3>Home</h3>'}
 const PageNotFound = { template: '<h3>Page not found.</h3>'}
 
 const routes = [
