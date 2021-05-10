@@ -84,6 +84,19 @@ router.get('/post/get-all', async (req, res) => {
     }
 });
 
+router.get('/post/get-small', async (req, res) => {
+    try {
+        const querySnapshot = await db.collection(postCollection).get();
+        const posts = [];
+        for (const doc of querySnapshot.docs) {
+            posts.push(await getPost(req, doc, 'small'));
+        }
+        sendSuccess(res, posts);
+    } catch(error) {
+        sendError(res, error);
+    }
+});
+
 router.get('/post/get-minimal', async (req, res) => {
     try {
         const uid = req.query.uid;
@@ -130,17 +143,25 @@ const uploadFile = (req, filePath, onSuccess= () => {}) => {
     blobWriter.end(req.file.buffer);
 }
 
-const getPost = async (req, doc) => {
+const getPost = async (req, doc, type) => {
     const post = doc.data();
-    const updatable = await hasUpdatePermission(req, post.userId);
-    return {
+    
+    const result = {
         uid: doc.id,
         title: post.title,
         description: post.description,
-        createDate: post.createDate?.toDate(),
-        author: await getAuthorName(post.userId),
-        updatable: updatable,
-        deletable: updatable
+        createDate: post.createDate?.toDate().getTime()
+    };
+    switch (type) {
+        case 'small':
+            result.featureImage = await getImageUrl(postFolderPath + result.uid);
+            return result;
+        default:
+            const updatable = await hasUpdatePermission(req, post.userId);
+            result.author = await getAuthorName(post.userId);
+            result.updatable = updatable;
+            result.deletable = updatable;
+            return result;
     }
 }
 
