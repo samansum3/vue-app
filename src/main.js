@@ -10,6 +10,7 @@ const Login = () => import(/* webpackChunkName: 'login' */ './components/login')
 const Home = () => import(/* webpackChunkName: 'home' */ './components/home');
 const User = () => import(/* webpackChunkName: 'user' */ './components/user');
 const PostManageMent = () => import(/* webpackChunkName: 'post' */ './components/post_management');
+const PostView = () => import(/* webpackChunkName: 'post-view' */ './components/post/post_view');
 import Spinner from './components/spinner';
 import DateFormater from './mixins/date_format.es';
 
@@ -60,8 +61,10 @@ const PageNotFound = { template: '<h3>Page not found.</h3>'}
 const routes = [
   { name: 'Home', path: '/', component: Home },
   { name: 'Post', path: '/post', component: PostManageMent },
+  { name: 'PostVew', path: '/post/view', component: PostView },
   { name: 'User', path: '/user', component: User },
   { name: 'Login', path: '/login', component: Login },
+  { name: 'PageNotFound', path: '/page-not-found', component: PageNotFound },
   { name: 'PageNotFound', path: '/*', component: PageNotFound }
 ];
 

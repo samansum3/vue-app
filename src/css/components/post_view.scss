@@ -1,0 +1,55 @@
+.post-view-wrapper {
+    margin-top: 2rem;
+    margin-bottom: 4rem;
+    background-color: white;
+    border-radius: 0.25rem;
+    padding: 1.5rem !important;
+    text-align: left;
+    min-height: 30rem;
+
+    .author-info {
+        display: flex;
+        align-items: center;
+
+        img {
+            width: 3.45rem;
+            height: 3.45rem;
+            border-radius: 2rem;
+        }
+        .author-name-wrapper {
+            margin-left: .75rem;
+            text-align: left;
+
+            .author-name {
+                font-weight: bold;
+            }
+            .create-date {
+                font-size: .75rem;
+            }
+        }
+    }
+
+    .banner-image-wrapper {
+        img {
+            width: 100%;
+            min-height: 25.75rem;
+        }
+    }
+    .post-body {
+        .title {
+            padding: 1.5rem 0 0.5rem;
+            
+            h4 {
+                font-weight: bold;
+            }
+        }
+        .description {
+            line-height: 1.75rem;
+            color: #5b5b5b;
+        }
+    }
+    .related-post-title {
+        text-align: right;
+        font-weight: bold;
+    }
+}
