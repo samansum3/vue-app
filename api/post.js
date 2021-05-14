@@ -11,6 +11,7 @@ const adminRoleId = 'adVNl0tA4SWhKphJd9bP';
 const postCollection = 'posts';
 const userCollection = 'users';
 const postFolderPath = 'posts/';
+const avatarFolderpath = 'user_avatar/';
 
 const upload = multer({
     storage: multer.memoryStorage()
@@ -84,6 +85,24 @@ router.get('/post/get-all', async (req, res) => {
     }
 });
 
+router.get('/post/post_view', async (req, res) => {
+    try {
+        const uid = req.query.uid;
+        const post = (await db.collection(postCollection).doc(uid).get()).data();
+        sendSuccess(res, {
+            uid: uid,
+            title: post.title,
+            description: post.description,
+            status: post.status,
+            createDate: post.createDate?.toDate().getTime(),
+            featureImage: await getImageUrl(postFolderPath + uid),
+            author: await getAuthorInfo(post.userId)
+        });
+    } catch(error) {
+        sendError(res, error);
+    }
+});
+
 router.get('/post/get-small', async (req, res) => {
     try {
         const querySnapshot = await db.collection(postCollection).get();
@@ -126,6 +145,13 @@ router.delete('/post/delete', async (req, res) => {
         sendError(res, error);
     }
 });
+
+const getAuthorInfo = async (uid) => {
+    return {
+        name: await getAuthorName(uid),
+        avatar: await getImageUrl(avatarFolderpath + uid)
+    }
+}
 
 const uploadFile = (req, filePath, onSuccess= () => {}) => {
     //Upload feature image into firebase storage
@@ -186,7 +212,7 @@ const getImageUrl = async (filePath) => {
     try {
         const urls = await bucket.file(filePath).getSignedUrl({
             action: 'read',
-            expires: new Date().getTime() + 1000 * 60 * 60 * 6
+            expires: new Date().getTime() + 1000 * 60 * 60
         });
         return urls[0];
     } catch(error) {
