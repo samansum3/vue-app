@@ -103,6 +103,19 @@ router.get('/post/post_view', async (req, res) => {
     }
 });
 
+router.get('/post/get-latest', async (req, res) => {
+    try {
+        const posts = [];
+        const querySnapshot = await db.collection(postCollection).orderBy('createDate', 'desc').limit(3).get();
+        for (const doc of querySnapshot.docs) {
+            posts.push(await getPost(req, doc, 'mini'));
+        }
+        sendSuccess(res, posts);
+    } catch(error) {
+        sendError(res, error);
+    }
+})
+
 router.get('/post/get-small', async (req, res) => {
     try {
         const querySnapshot = await db.collection(postCollection).get();
@@ -174,17 +187,22 @@ const getPost = async (req, doc, type) => {
     
     const result = {
         uid: doc.id,
-        title: post.title,
-        description: post.description,
-        createDate: post.createDate?.toDate().getTime()
+        title: post.title
     };
     switch (type) {
+        case 'mini':
+            result.featureImage = await getImageUrl(postFolderPath + result.uid);
+            return result;
         case 'small':
             result.featureImage = await getImageUrl(postFolderPath + result.uid);
+            result.description = post.description;
+            result.createDate = post.createDate?.toDate().getTime();
             return result;
         default:
             const updatable = await hasUpdatePermission(req, post.userId);
             result.author = await getAuthorName(post.userId);
+            result.description = post.description;
+            result.createDate = post.createDate?.toDate().getTime();
             result.updatable = updatable;
             result.deletable = updatable;
             return result;

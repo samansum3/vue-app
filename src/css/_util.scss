@@ -5,3 +5,16 @@
     -ms-user-select: none;
     user-select: none;
  }
+
+ //Shadow
+ .shadow {
+     &-low {
+        box-shadow: 0 .125rem 0.5rem rgba(0,0,0,.15);
+     }
+ }
+
+ .border {
+     &-low {
+         border: 1px solid #e2e2ee;
+     }
+ }

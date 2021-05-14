@@ -1,37 +1,44 @@
 <template>
     <div class="post-view-wrapper container-1280 position-relative">
-        <div v-if="!isLoading" class="row">
+        <div class="row">
             <div class="col-12 col-lg-9">
-                <div class="author-info">
-                    <img :src="post.author.avatar" alt="Author avatar" />
-                    <div class="author-name-wrapper">
-                        <div class="author-name">{{ post.author.name }}</div>
-                        <span class="create-date">{{timestampToString(post.createDate, 'DD MMM yyyy @hh:mm A') }}</span>
+                <template v-if="!isLoading">
+                    <div class="author-info">
+                        <img :src="post.author.avatar" alt="Author avatar" />
+                        <div class="author-name-wrapper">
+                            <div class="author-name">{{ post.author.name }}</div>
+                            <span class="create-date">{{timestampToString(post.createDate, 'DD MMM yyyy @hh:mm A') }}</span>
+                        </div>
                     </div>
-                </div>
-                <hr />
+                    <hr />
 
-                <div class="banner-image-wrapper">
-                    <img :src="post.featureImage" alt="Feature Image" />
-                </div>
-                <div class="d-flex">
-                    <div class="post-body">
-                        <div class="title">
-                            <h4>{{ post.title }}</h4>
-                        </div>
-                        <div class="description">
-                            <p>{{ post.description }}</p>
+                    <div class="banner-image-wrapper">
+                        <img :src="post.featureImage" alt="Feature Image" />
+                    </div>
+                    <div class="d-flex">
+                        <div class="post-body">
+                            <div class="title">
+                                <h4>{{ post.title }}</h4>
+                            </div>
+                            <div class="description">
+                                <p>{{ post.description }}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </template>
             </div>
-            <div class="col-3 d-none d-lg-block">
+            <div class="col-3 d-none d-lg-block mt-4 pt-1">
                 <h4 class="related-post-title">
                     Latest Post
                 </h4>
                 <hr />
                 <div class="related-post-wrapper">
-                    <!-- Post card -->
+                    <post-card
+                        v-for="(post, index) in latestPosts"
+                        :key="'post-' + index"
+                        :post="post"
+                        :is-latest-post="true"
+                    ></post-card>
                 </div>
             </div>
         </div>
@@ -42,13 +49,16 @@
 <script>
 import axios from 'axios/dist/axios.min';
 import LoadingIndicator from '../loading_indicator';
+import PostCard from './post_card';
 
 import '../../css/components/post_view.scss';
+import '../../css/components/post.scss';
 
 export default {
     name: 'Post view',
     components: {
-        LoadingIndicator
+        LoadingIndicator,
+        PostCard
     },
     data() {
         return {
@@ -59,14 +69,19 @@ export default {
             isLoading: true
         }
     },
-    created() {
-        this.getPost();
+    beforeRouteEnter: function(to, from, next) {
+        next(vm => {
+            vm.getPost(to.query.id);
+            vm.getLatestPosts();
+        });
+    },
+    beforeRouteUpdate: function(to, from, next) {
+        this.getPost(to.query.id);
+        next();
     },
     methods: {
-        getPost() {
+        getPost(uid) {
             this.isLoading = true;
-            
-            const uid = this.$route.query.id;
             if (!uid) {
                 this.redirectToPageNotFound()
                 return;
@@ -88,7 +103,7 @@ export default {
             });
         },
         getLatestPosts() {
-            axios.get('/api/post/latest').then(response => {
+            axios.get('/api/post/get-latest').then(response => {
                 if (response.data.success) {
                     this.latestPosts = response.data.result;
                 }

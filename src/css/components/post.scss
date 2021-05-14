@@ -1,15 +1,14 @@
 @import '../variable/screen';
 
-.post-card-wrapper {
+.post-card-wrapper, .latest-post-wrapper {
     text-align: left;
     background: white;
     padding: 1.25rem;
     margin-bottom: 2rem;
-    box-shadow: 0 .125rem 0.5rem rgba(0,0,0,.15);
 
     @media screen and (min-width: $screen-lg) {
         min-height: 23.75rem !important;
-        height: 23.75rem i !important;
+        height: 23.75rem !important;
     }
     @media screen and (min-width: $screen-md) {
         min-height: 21.25rem;
@@ -43,4 +42,10 @@
             line-height: 1.75rem;
         }
     }
+}
+
+.post-card-wrapper.latest-post-wrapper {
+    padding: .5rem !important;
+    min-height: unset !important;
+    height: unset !important;
 }
