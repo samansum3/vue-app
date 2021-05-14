@@ -66,6 +66,8 @@ router.post('/post/update', upload.single('featureImage'), async (req, res) => {
                 console.error(error);
             }
             uploadFile(req, postFolderPath + post.uid, () => sendSuccess(res));
+        } else {
+            sendSuccess(res);
         }
     } catch(error) {
         sendError(res, error);
