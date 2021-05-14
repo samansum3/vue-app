@@ -34,7 +34,7 @@
     .banner-image-wrapper {
         img {
             width: 100%;
-            
+
             @media screen and (min-width: $screen-lg) {
                 min-height: 25.75rem;
             }
@@ -51,6 +51,10 @@
         .description {
             line-height: 1.75rem;
             color: #5b5b5b;
+            
+            p {
+                white-space: pre-wrap;
+            }
         }
     }
     .related-post-title {
