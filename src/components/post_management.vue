@@ -89,8 +89,10 @@ export default {
             this.openCreatePostPopup(post => this.posts.push(this.qulaifyPost(post)));
         },
         viewPost(post) {
-            //TODO redirect to view post screen
-            console.log('view post ' + JSON.stringify(post));
+            this.$router.push({
+                path: '/post/view',
+                query: { id: post.uid }
+            });
         },
         updatePost(post) {
             this.openCreatePostPopup((updatedPost) => {

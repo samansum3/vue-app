@@ -8,7 +8,10 @@
         color: white;
         font-weight: bold;
         font-size: 1.5rem;
-
+        
+        &:focus {
+            outline: none;
+        }
     }
     .navbar-nav {
         &:hover {
@@ -19,6 +22,10 @@
                 color: #e0e0e0;
                 padding-left: 1rem;
                 padding-right: 1rem;
+
+                &:focus {
+                    outline: none;
+                }
             }
         }
         .nav-item.active {

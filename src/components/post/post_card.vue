@@ -1,6 +1,6 @@
 <template>
     <div class="post-card-wrapper">
-        <div class="image-wrapper" @click="redirect">
+        <div class="image-wrapper" @click="viewPost">
             <img :src="post.featureImage" alt="Feature image" class="feature-image" />
             <div class="create-date">
                 <span>{{ timestampToString(post.createDate) }}</span>
@@ -22,9 +22,11 @@ export default {
         post: {type: Object, require: true}
     },
     methods: {
-        redirect() {
-            console.log('View post');
-            //TODO remove this method and use <router-link tag="h5"> instead
+        viewPost() {
+            this.$router.push({
+                path: '/post/view',
+                query: { id: this.post.uid }
+            })
         }
     }
 }
