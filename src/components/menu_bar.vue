@@ -22,6 +22,8 @@
 </template>
 
 <script>
+import { debounce } from 'lodash';
+
 export default {
     name: 'Menu bar',
     props: {
@@ -38,9 +40,9 @@ export default {
         }
     },
     methods: {
-        search() {
+        search: debounce(function() {
             this.$emit('search-changed', this.keywords);
-        }
+        }, 500)
     }
 }
 </script>

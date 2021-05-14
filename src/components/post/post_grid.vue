@@ -11,38 +11,17 @@
 </template>
 
 <script>
-import axios from 'axios/dist/axios.min';
 import PostCard from './post_card';
 
 import '../../css/components/post.scss';
 
 export default {
     name: 'Post grid',
+    props: {
+        posts: { type: Array, default: () => ([]) }
+    },
     components: {
         PostCard
-    },
-    data() {
-        return {
-            posts: [],
-            isLoading: false,
-        }
-    },
-    created() {
-        this.getPost();
-    },
-    methods: {
-        getPost() {
-            this.isLoading = true;
-            axios.get('/api/post/get-small').then(response => {
-                this.isLoading = false;
-                if (response.data.success) {
-                    this.posts = this.posts.concat(response.data.result);
-                }
-            }).catch(error => {
-                this.isLoading = false;
-                console.log(error);
-            });
-        }
     }
 }
 </script>
