@@ -25,6 +25,7 @@ export default {
     data() {
         return {
             items: [
+                { key: 'myProfile', value: 'My profile' },
                 { key: 'logout', value: 'Log out' }
             ]
         }
@@ -32,6 +33,9 @@ export default {
     methods: {
         performAction(item) {
             this[item.key]();
+        },
+        myProfile: function() {
+            this.$router.push('/my-profile').catch(() => {});
         },
         logout() {
             axios.post('/session_logout').then(response => {
