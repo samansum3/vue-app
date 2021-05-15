@@ -12,9 +12,30 @@
     }
 }
 .vue-croppie-wrapper {
-    padding-top: 1rem;
-
+    padding-top: 1.5rem;
+    
     .popup-footer {
         padding-bottom: 1rem !important;
+    }
+}
+.vue-croppie-wrapper.show-border {
+    .croppie-container {
+        .cr-viewport,
+        .cr-resizer {
+            border: none;
+        }
+
+        .cr-slider-wrap {
+            display: flex;
+            width: unset;
+            margin: 1rem 2.187rem;
+
+            .cr-slider {
+                width: 15.625rem;
+            }
+            .rotation-wrapper {
+                margin-left: auto;
+            }
+        }
     }
 }

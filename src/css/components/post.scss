@@ -19,8 +19,11 @@
         position: relative;
         cursor: pointer;
 
-        img {
+        .feature-image {
             width: 100%;
+            @media screen and (min-width: $screen-lg) {
+                min-height: 10rem;
+            }
         }
         .create-date {
             position: absolute;
@@ -48,4 +51,10 @@
     padding: .5rem !important;
     min-height: unset !important;
     height: unset !important;
+
+    .image-wrapper {
+        .feature-image {
+            min-height: unset;
+        }
+    }
 }

@@ -11,6 +11,7 @@ const Home = () => import(/* webpackChunkName: 'home' */ './components/home');
 const User = () => import(/* webpackChunkName: 'user' */ './components/user');
 const PostManageMent = () => import(/* webpackChunkName: 'post' */ './components/post_management');
 const PostView = () => import(/* webpackChunkName: 'post-view' */ './components/post/post_view');
+const MyProfile = () => import(/* webpackChunkName: 'my-profile' */ './components/my_profile');
 import Spinner from './components/spinner';
 import DateFormater from './mixins/date_format.es';
 
@@ -59,11 +60,12 @@ Vue.mixin(DateFormater);
 const PageNotFound = { template: '<h3>Page not found.</h3>'}
 
 const routes = [
+  { name: 'Login', path: '/login', component: Login },
   { name: 'Home', path: '/', component: Home },
   { name: 'Post', path: '/post', component: PostManageMent },
   { name: 'PostVew', path: '/post/view', component: PostView },
   { name: 'User', path: '/user', component: User },
-  { name: 'Login', path: '/login', component: Login },
+  { name: 'MyProfile', path: '/my-profile', component: MyProfile },
   { name: 'PageNotFound', path: '/page-not-found', component: PageNotFound },
   { name: 'PageNotFound', path: '/*', component: PageNotFound }
 ];

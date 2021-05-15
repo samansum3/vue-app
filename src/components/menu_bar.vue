@@ -10,14 +10,13 @@
                         <input type="text" v-model="keywords" :placeholder="searchPlaceholder" @keyup="search" class="form-control search-box max-width-215">
                         <b-icon-search />
                     </div>
-                    <button v-if="!hideAddButton" class="btn btn-add shadow-none ml-4" @click="onCreate">
-                        <b-icon-plus-circle />
-                        <span>{{ addButtonText }}</span>
+                    <button v-if="!hideAddButton" class="btn btn-add shadow-none ml-4" @click="$emit('onCreate')">
+                        <b-icon-plus-circle v-if="!hideAddButtonIcon" />
+                        <span :class="addButtonTextClass">{{ addButtonText }}</span>
                     </button>
                 </div>
             </div>
         </div>
-        
     </div>
 </template>
 
@@ -29,6 +28,8 @@ export default {
     props: {
         pageTitle: {type: String, default: ''},
         addButtonText: {type: String, default: 'Add new'},
+        addButtonTextClass: {type: String, default: ''},
+        hideAddButtonIcon: {type: Boolean, default: false},
         hideAddButton: {type: Boolean, default: false},
         searchPlaceholder: {type: String, default: 'Search'},
         hideSearchBox: {type: Boolean, default: false},

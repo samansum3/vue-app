@@ -1,0 +1,49 @@
+.manager-page-wrapper {
+    .card-container {
+        .my-profile {
+            padding-top: 2rem !important;
+            margin-left: unset;
+            margin-right: unset;
+            border: 1px solid #e2e2e2;
+    
+            .left-side-bar {
+                display: flex;
+                justify-content: center;
+
+                .avatar-wrapper {
+                    width: 10rem;
+                    position: relative;
+
+                    .avatar {
+                        width: 10rem;
+                        border-radius: 5rem;
+                    }
+                    .camera-wrapper {
+                        width: 2.5rem;
+                        height: 2.5rem;
+                        background-color: white;
+                        border: 1px solid #e2e2e2;
+                        border-radius: 50%;
+                        position: absolute;
+                        right: .5rem;
+                        top: 7.5rem;
+                        cursor: pointer;
+
+                        .camera-icon {
+                            color: #b4b4b4;
+                            position: absolute;
+                            left: 0.438rem;
+                            top: 0.375rem;
+                        }
+                    }
+                }
+            }
+            .group-control {
+                label {
+                    padding-top: 0 !important;
+                    font-weight: bold !important;
+                }
+            }
+        }
+    }
+}
