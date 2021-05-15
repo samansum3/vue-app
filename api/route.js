@@ -5,10 +5,12 @@ const admin = require('firebase-admin');
 const db = admin.firestore();
 const userCollection = 'users';
 const rolesCollection = 'roles';
+const avatarFolderpath = 'user_avatar/';
 
 const { sendSuccess, sendError } = require('./util');
 
 const adminPermission = require('../middleware/permission')(db.collection(userCollection));
+const { uploader, uploadFile, getImageUrl } = require('./storage_util');
 
 const adminRoleId = 'adVNl0tA4SWhKphJd9bP'; //TODO refactor
 
@@ -100,10 +102,40 @@ router.use('/user/get-all', async (request, response) => {
     }
 });
 
-router.use('/user/:userId', (request, response) => {
-    db.collection(userCollection).doc(request.params.userId).get()
-        .then(async doc => response.status(200).json(await getUser(doc.data())))
-        .catch(console.error);
+router.get('/user/get-profile', async (req, res) => {
+    try {
+        const uid = req.session.uid;
+        const user = (await db.collection(userCollection).doc(uid).get()).data();
+        sendSuccess(res, {
+            uid: uid,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            emailAddress: user.emailAddress,
+            avatar: await getImageUrl(avatarFolderpath + uid)
+        });
+    } catch(error) {
+        sendError(res, error);
+    }
+});
+
+router.post('/user/update-profile', uploader('avatar'), async (req, res) => {
+    try {
+        const user = req.body;
+        await db.collection(userCollection).doc(user.uid).set({
+            firstName: user.firstName,
+            lastName: user.lastName,
+            emailAddress: user.emailAddress,
+            modifiedDate: new Date()
+        }, {
+            merge: true
+        });
+        if (req.file) {
+            await uploadFile(req, avatarFolderpath + user.uid);
+        }
+        sendSuccess(res);
+    } catch(error) {
+        sendError(res, error);
+    }
 });
 
 const getUser = async (doc) => {
