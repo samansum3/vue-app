@@ -8,11 +8,10 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const csrf = require('csurf');
 
+//Load environment variable from .env
 require('dotenv').config();
 
-const connectToMongodb = require('./database/mongodb');
 const environment = require('./config/environment');
-const invoice = require('./model/invoice');
 const firebaseAuthentication = require('./middleware/authentication');
 
 const app = express();
@@ -37,12 +36,6 @@ require('./database/firebase_admin_wrapper');
 
 const db = admin.firestore();
 const userCollection = 'users';
-const roleCollection = 'roles';
-
-
-//connect to db
-connectToMongodb();
-
 
 //User body parser
 app.use(bodyParser.urlencoded({extended: false}));
@@ -130,77 +123,11 @@ app.get('/auth_check', firebaseAuthentication(admin), (request, response) => {
     response.status(200).json({success: true});
 });
 
-
 const sendError = (response, error, status, message) => {
     console.log('ERROR ' + error);
     response.status(status).json({success: false, message: message});
     // response.redirect('/');
 }
-
-app.post('/invoice/create', (request, response) => {
-    const form = request.body;
-    const document = new invoice({
-        sellerName: form.sellerName,
-        customerName: form.customerName,
-        products: form.products
-    });
-    document.save((error, doc) => {
-        if (error) {
-            console.log('ERROR ' + error);
-            response.status(500).json({message: 'Failed to save the invoice.'});
-        } else {
-            console.log(doc);
-            response.status(200).json({message: 'Invoice is saved.', id: doc._id});
-        }
-    });
-});
-
-app.get('/invoice/get-all', firebaseAuthentication(admin), (request, response) => {
-    invoice.find((error, docs) => {
-        if (error) {
-            sendError(response, error, 500, 'Failed to get invoices');
-        } else {
-            console.log('Get all invoice docs successfully.');
-            response.status(200).json(docs);
-        }
-    });
-});
-
-app.get('/invoice/get/:id', (request, response) => {
-    const id = request.params.id;
-    invoice.findById(id, (error, doc) => {
-        if (error) {
-            sendError(response, error, 'Failed to get invoices.');
-        } else {
-            console.log("Get invoice successfully.");
-            response.status(200).json(doc);
-        }
-    });
-});
-
-app.put('/invoice/update', (request, response) => {
-    const id = request.body.id;
-    const document = request.body;
-    invoice.findByIdAndUpdate(id, document, (error, doc) => {
-        if (error) {
-            sendError(response, error, 500, 'Failed to update invoice.');
-        } else {
-            console.log('Updated invoice successfully');
-            response.status(200).json(doc);
-        }
-    });
-});
-
-app.delete('/invoice/delete', (request, response) => {
-    invoice.findByIdAndDelete(request.query.id, (error, doc) => {
-        if (error) {
-            sendError(response, error, 500, 'Failed to delete invoice.');
-        } else {
-            console.log('Invoice was deleted successfully');
-            response.status(200).json(doc);
-        }
-    });
-});
 
 //Serve vue app
 app.use('/', serverStatic(path.join(__dirname, 'dist')));
